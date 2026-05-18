@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TransCap News | IBBA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:   #1a2744;
+      --accent:    #f6931d;
+      --bg:        #f0f2f7;
+      --card:      #ffffff;
+      --text:      #1a1a2e;
+      --muted:     #6b7280;
+      --border:    #e5e7eb;
+      --hover:     #f9fafb;
+      --rental:    #e74c3c;
+      --concessions:#2980b9;
+      --airlines:  #16a085;
+      --capgoods:  #8e44ad;
+      --ab:        #c0392b;
+      --estadao:   #1a5276;
+      --globo:     #e67e22;
+      --valor:     #1e8449;
+      --bj:        #6c3483;
+      --pipeline:  #117a65;
+      --infomoney: #922b21;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .header-left h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .header-left .subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,0.55);
+      margin-top: 2px;
+    }
+    .header-right { display: flex; gap: 8px; align-items: center; }
+
+    .btn {
+      border: none;
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-accent  { background: var(--accent); color: #fff; }
+    .btn-outline { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+
+    /* ── TABS ── */
+    .tabs-wrap {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-wrap::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: none;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+
+    /* sector accent colors */
+    .tab-btn[data-sector="rental"].active    { border-bottom-color: var(--rental); color: var(--rental); }
+    .tab-btn[data-sector="concessions"].active { border-bottom-color: var(--concessions); color: var(--concessions); }
+    .tab-btn[data-sector="airlines"].active  { border-bottom-color: var(--airlines); color: var(--airlines); }
+    .tab-btn[data-sector="capgoods"].active  { border-bottom-color: var(--capgoods); color: var(--capgoods); }
+
+    /* ── SEARCH BAR ── */
+    .search-wrap {
+      padding: 12px 24px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-input {
+      width: 100%;
+      max-width: 480px;
+      padding: 8px 14px 8px 34px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+
+    /* ── SECTOR SECTION ── */
+    .sector-section { margin-bottom: 32px; }
+    .sector-section.hidden { display: none; }
+
+    .sector-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .sector-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sector-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .sector-count {
+      background: var(--bg);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    /* ── NEWS LIST ── */
+    .news-list {
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .news-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      transition: background .12s;
+    }
+    .news-item:last-child { border-bottom: none; }
+    .news-item:hover { background: var(--hover); }
+    .news-item.search-hidden { display: none; }
+
+    .news-bullet {
+      color: var(--accent);
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      line-height: 1;
+    }
+    .news-body { flex: 1; min-width: 0; }
+    .news-title {
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .news-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .source-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .time-tag {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* ── EMPTY / LOADING / ERROR ── */
+    .status-box {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .status-box .icon { font-size: 32px; margin-bottom: 10px; }
+    .spinner {
+      display: inline-block;
+      width: 28px; height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER STATUS ── */
+    .footer-status {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      padding-bottom: 16px;
+    }
+
+    /* ── SOURCE LEGEND ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .legend-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; }
+    .legend-item {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #fff;
+      letter-spacing: .3px;
+    }
+
+    /* ── DIGEST MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    }
+    .modal-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 700; }
+    .modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--muted); line-height: 1; }
+    .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .digest-text {
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      color: var(--text);
+      background: var(--bg);
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── TIME FILTER ── */
+    .timefilter-wrap {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .timefilter-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; }
+    .timefilter-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .timefilter-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .timefilter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .history-note {
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    @media (max-width: 600px) {
+      .header { padding: 12px 16px; }
+      .content { padding: 16px 12px 32px; }
+      .search-wrap { padding: 10px 12px; }
+      .legend { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <h1>📰 TransCap News</h1>
+    <div class="subtitle" id="last-update-subtitle">Buscando notícias…</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-outline" id="ino-btn" onclick="handleInoClick()" style="font-size:11px;">⚡ Conectar Inoreader</button>
+    <button class="btn btn-outline" onclick="openDigest()">✉️ Gerar Digest</button>
+    <button class="btn btn-accent" id="refresh-btn" onclick="loadAllNews()">↻ Atualizar</button>
+  </div>
+</header>
+
+<!-- TABS -->
+<nav class="tabs-wrap">
+  <button class="tab-btn active" data-sector="all"         onclick="switchTab('all')">Todas</button>
+  <button class="tab-btn"         data-sector="rental"     onclick="switchTab('rental')">🚗 Rental &amp; Auto</button>
+  <button class="tab-btn"         data-sector="concessions"onclick="switchTab('concessions')">🚂 Concessões</button>
+  <button class="tab-btn"         data-sector="airlines"   onclick="switchTab('airlines')">✈️ Airlines</button>
+  <button class="tab-btn"         data-sector="capgoods"   onclick="switchTab('capgoods')">🏭 Capital Goods</button>
+</nav>
+
+<!-- SOURCE LEGEND -->
+<div class="legend">
+  <span class="legend-label">Fontes:</span>
+  <span class="legend-item" style="background:var(--ab)">Automotive Business</span>
+  <span class="legend-item" style="background:var(--estadao)">Estadão</span>
+  <span class="legend-item" style="background:var(--globo)">O Globo</span>
+  <span class="legend-item" style="background:var(--valor)">Valor</span>
+  <span class="legend-item" style="background:var(--bj)">Brazil Journal</span>
+  <span class="legend-item" style="background:var(--pipeline)">Pipeline Valor</span>
+  <span class="legend-item" style="background:var(--infomoney)">InfoMoney</span>
+</div>
+
+<!-- TIME FILTER -->
+<div class="timefilter-wrap">
+  <span class="timefilter-label">Período:</span>
+  <button class="timefilter-btn active" data-range="1"  onclick="switchTimeRange(1)">Hoje</button>
+  <button class="timefilter-btn"        data-range="3"  onclick="switchTimeRange(3)">3 dias</button>
+  <button class="timefilter-btn"        data-range="7"  onclick="switchTimeRange(7)">7 dias</button>
+  <button class="timefilter-btn"        data-range="30" onclick="switchTimeRange(30)">30 dias</button>
+  <button class="timefilter-btn"        data-range="0"  onclick="switchTimeRange(0)">Tudo</button>
+  <span class="history-note" id="history-note"></span>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+  <input class="search-input" id="search-input" type="text" placeholder="Buscar notícias…" oninput="filterSearch()" />
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="content" id="main-content">
+  <div class="status-box">
+    <div class="spinner"></div>
+    <div>Buscando notícias das 7 fontes…</div>
+  </div>
+</main>
+
+<div class="footer-status" id="footer-status"></div>
+
+<!-- DIGEST MODAL -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeDigestOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>✉️ Digest do Dia</h2>
+      <button class="modal-close" onclick="closeDigest()">×</button>
+    </div>
+    <div class="modal-body">
+      <pre class="digest-text" id="digest-content">Gerando…</pre>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-accent" onclick="copyDigest()">📋 Copiar</button>
+      <button class="btn btn-outline" style="background:var(--primary);color:#fff;" onclick="sendEmailDigest()">📧 Abrir no Email</button>
+      <button class="btn btn-outline" style="background:var(--muted);color:#fff;" onclick="closeDigest()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONFIGURAÇÃO — edite aqui para personalizar
+   ═══════════════════════════════════════════════════ */
+
+const CONFIG = {
+  digestEmail:        'pedrotineo19@gmail.com',
+  autoRefreshMinutes: 30,
+  historyDays:        30,
+  appId:              '1000013333',
+  appKey:             '7cJytlQXdf_BAM9_FT1m0193F75Qqa_b',
+  inoreaderFolder:    'TransCap',
+  articlesPerLoad:    200,
+};
+
+/* ── Mapeamento de domínio → fonte ── */
+const SOURCE_MAP = [
+  { domain: 'automotivebusiness.com.br', name: 'Automotive Business', short: 'Autom.Business', color: '#c0392b',
+    rssUrl: 'https://www.automotivebusiness.com.br/feed' },
+  { domain: 'estadao.com.br',            name: 'Estadão',              short: 'Estadão',        color: '#1a5276',
+    rssUrl: 'https://economia.estadao.com.br/rss2.xml' },
+  { domain: 'oglobo.globo.com',          name: 'O Globo',              short: 'O Globo',        color: '#e67e22',
+    rssUrl: 'https://oglobo.globo.com/economia/rss.xml' },
+  { domain: 'valor.globo.com',           name: 'Valor Econômico',      short: 'Valor',          color: '#1e8449',
+    rssUrl: 'https://valor.globo.com/rss20.xml' },
+  { domain: 'braziljournal.com',         name: 'Brazil Journal',       short: 'Brazil Journal', color: '#6c3483',
+    rssUrl: 'https://braziljournal.com/feed/' },
+  { domain: 'pipelinevalor.globo.com',   name: 'Pipeline Valor',       short: 'Pipeline',       color: '#117a65',
+    rssUrl: 'https://pipelinevalor.globo.com/feed/' },
+  { domain: 'infomoney.com.br',          name: 'InfoMoney',             short: 'InfoMoney',      color: '#922b21',
+    rssUrl: 'https://www.infomoney.com.br/feed/' },
+];
+
+/* ── Setores e suas palavras-chave ── */
+const SECTORS = [
+  {
+    id: 'rental', name: 'Rental & Automotivo', emoji: '🚗', color: '#e74c3c',
+    keywords: [
+      // Empresas de locação cobertas
+      'localiza','movida','unidas','vamos ','vamo3','armac','mills ',
+      'tegma','rent3','movi3','locadora','renovar frota','frota de veíc',
+      // Montadoras globais
+      'volkswagen','vw ','byd','stellantis','tesla','bmw','fiat','peugeot',
+      'ford ','toyota ','general motors','gm ','chevrolet','hyundai',
+      'renault','nissan','honda ','gwm ','gac motors','gac ','xiaomi',
+      'nio ','vinfast','montadora','anfavea','tavares',
+      // Dados e índices do setor
+      'fenabrave','emplacamento','anfavea','fipe ','idat ',
+      'seminovos','carro usado','veículo usado','usados ',
+      'financiamento de veículo','financiamento automotivo','crédito automotivo',
+      'vendas de veículos','produção de veículos','exportação de veículos',
+      // Regulatório automotivo
+      'ipva','dpvat','imposto seletivo veículos','imposto seletivo automotiv',
+      // Eletrificação
+      'carro elétrico','veículo elétrico','eletrificado','plug-in',
+      'híbrido flex','elétrico chinês','frota elétrica',
+      // Outros
+      'automob','setor automotivo','indústria automotiva',
+      'tarifas trump','guerra comercial automotiv',
+    ],
+  },
+  {
+    id: 'concessions', name: 'Concessões & Logística', emoji: '🚂', color: '#2980b9',
+    keywords: [
+      // Empresas rodoviárias cobertas
+      'ccr ','ecorodovias','ecoporto','epr ','rodovias do tietê',
+      'rota da celulose','rota verde','sorocabana','nova raposo',
+      'repactuação de rodov','br-163','artesp',
+      // Ferrovias
+      'rumo ','rumo logística','ferrovia','leilão de ferrovia',
+      'estrada de ferro','malha norte','malha sul',
+      'fs infraestrutura','locomotiva','vagão','frete ferroviário',
+      'vale ferrov','acordo ferrov',
+      // Hidrovias e portos
+      'hidrovias do brasil','hbsa','hbsa3','hidrovia','cabotagem',
+      'santos brasil','porto de santos','terminal portuário',
+      'itaguaí','leilão portuário','túnel santos','porto ',
+      // Logística rodoviária
+      'jsl ','jslg3','simpar','tegma','tgma3',
+      'transporte de veículos','logística rodoviária',
+      // Aeroportos (concessões de infraestrutura)
+      'aena ','galeão','santos dumont','viracopos','congonhas',
+      'leilão de aeroporto',
+      // Infraestrutura geral
+      'rodovia','concessão rodoviária','leilão de rodov','leilão rodoviário',
+      'ministério dos transportes','antt ','antaq ',
+      'pedágio eletrônico','ponte jk','infraestrutura de transport',
+      'concessão de transport','leilão de transport',
+      // Agro/logística (volumes Rumo)
+      'frete de grãos','exportação de grãos','safra ','soja ','milho ',
+      'agronegócio','volumes rumo','esmagamento de soja',
+    ],
+  },
+  {
+    id: 'airlines', name: 'Airlines', emoji: '✈️', color: '#16a085',
+    keywords: [
+      // Companhias aéreas brasileiras
+      'gol linhas','gol aérea','gol reestrutur','gol anuncia',
+      'azul linhas','azul aérea','azul reestrutur',
+      'latam airlines','latam ',
+      // Internacionais relevantes
+      'avianca','air france','klm','tap ','jetblue','sky airlines',
+      'lufthansa','united airlines','american airlines',
+      'aerolíneas argentinas',
+      // Fabricantes aeronáuticos
+      'embraer','eve ','evtol','carro voador',
+      'kc-390','super tucano','e195','e175','e2 ','e1 ',
+      'boeing','airbus','a320','a321','787','737',
+      // Setor aéreo
+      'companhia aérea','aviação civil','anac ','aeronave',
+      'passagem aérea','atraso de voo','setor aéreo',
+      'combustível de aviação','qav ','querosene de aviação',
+      'reestruturação aérea','dívida aérea',
+      'voa brasil','iata ','passageiro aéreo',
+      // Aeroportos (operações)
+      'congonhas','guarulhos','galeão','viracopos','santos dumont',
+    ],
+  },
+  {
+    id: 'capgoods', name: 'Capital Goods', emoji: '🏭', color: '#8e44ad',
+    keywords: [
+      // Empresas cobertas
+      'weg ','wege3','marcopolo','pomo3','tupy ','tupy3',
+      'gps participações','ggps3','grsa ',
+      'randon','fras-le','frasle','fras le',
+      'iochpe','maxion','mypk3',
+      'mahle ','priner','prnr3',
+      'aeris ','aeri3',
+      // Produtos e temas industriais
+      'implementos rodoviários','ônibus elétrico','caminhão elétrico',
+      'ônibus a biometano','veículos pesados','máquinas agrícolas',
+      'bens de capital','abimaq','fornecedor automotiv',
+      'peças automotivas','autopeças',
+      // Energia renovável
+      'energia eólica','eólica offshore','energia solar','solar flutuante',
+      'biometano','hidrogênio verde','bess ','t&d ',
+      'turbina eólica','parque eólico','parque solar',
+      'armazenamento de energia','fundo clima','leilão de energia',
+      'hidrelétrica','energia renovável',
+      // Macro industrial
+      'produção industrial','indústria de transformação',
+      'importação de máquinas','descarbonização industrial',
+      'pmi industrial','atividade industrial','capacidade instalada',
+      'data center','transformadores elétricos','motores elétricos',
+      'manufatura','indústria pesada',
+    ],
+  },
+];
+
+/* ═══════════════════════════════════════════════════
+   ESTADO GLOBAL
+   ═══════════════════════════════════════════════════ */
+let allArticles    = [];   // histórico completo (localStorage + fresh)
+let currentSector  = 'all';
+let currentRange   = 1;    // dias exibidos (1 = hoje, 0 = tudo)
+let lastLoadTime   = null;
+
+/* ═══════════════════════════════════════════════════
+   DETECÇÃO DE FONTE pelo domínio do link
+   ═══════════════════════════════════════════════════ */
+function detectSource(link) {
+  try {
+    const hostname = new URL(link).hostname;
+    for (const s of SOURCE_MAP) {
+      if (hostname.includes(s.domain)) return s;
+    }
+  } catch(_) {}
+  return { name: 'Inoreader', short: 'Outros', color: '#95a5a6' };
+}
+
+function classifySectors(text) {
+  const lower = text.toLowerCase();
+  const matched = [];
+  for (const s of SECTORS) {
+    for (const kw of s.keywords) {
+      if (lower.includes(kw.toLowerCase())) {
+        matched.push(s.id);
+        break;
+      }
+    }
+  }
+  return matched;
+}
+
+/* ═══════════════════════════════════════════════════
+   HISTÓRICO LOCAL (localStorage)
+   ═══════════════════════════════════════════════════ */
+const HISTORY_KEY = 'transcap_history_v1';
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw).map(a => ({ ...a, pubDate: new Date(a.pubDate) }));
+  } catch { return []; }
+}
+
+function saveHistory(articles) {
+  try {
+    const cutoff = Date.now() - CONFIG.historyDays * 86400000;
+    const toSave = articles
+      .filter(a => a.pubDate.getTime() > cutoff)
+      .map(a => ({ ...a, pubDate: a.pubDate.toISOString() }));
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(toSave));
+  } catch (e) { console.warn('localStorage:', e); }
+}
+
+function mergeArticles(existing, fresh) {
+  const seen = new Set(existing.map(a => a.title.toLowerCase().slice(0, 60)));
+  const newOnes = fresh.filter(a => {
+    const key = a.title.toLowerCase().slice(0, 60);
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+  return [...existing, ...newOnes].sort((a, b) => b.pubDate - a.pubDate);
+}
+
+/* ═══════════════════════════════════════════════════
+   INOREADER OAUTH2
+   ═══════════════════════════════════════════════════ */
+const INO_API    = 'https://www.inoreader.com/reader/api/0';
+const INO_TOKEN_KEY = 'ino_access_token';
+
+function getRedirectUri() {
+  return window.location.href.split('#')[0].split('?')[0];
+}
+
+function checkOAuthCallback() {
+  const hash = window.location.hash;
+  if (!hash || !hash.includes('access_token')) return null;
+  const params = new URLSearchParams(hash.slice(1));
+  const token  = params.get('access_token');
+  if (token) {
+    localStorage.setItem(INO_TOKEN_KEY, token);
+    history.replaceState(null, '', window.location.pathname);
+    return token;
+  }
+  return null;
+}
+
+function getToken() {
+  return checkOAuthCallback() || localStorage.getItem(INO_TOKEN_KEY);
+}
+
+function handleInoClick() {
+  if (getToken()) {
+    if (confirm('Desconectar do Inoreader?')) {
+      localStorage.removeItem(INO_TOKEN_KEY);
+      location.reload();
+    }
+  } else {
+    const authUrl = 'https://www.inoreader.com/oauth2/auth?' +
+      `client_id=${CONFIG.appId}` +
+      `&redirect_uri=${encodeURIComponent(getRedirectUri())}` +
+      `&response_type=token&scope=read`;
+    window.location.href = authUrl;
+  }
+}
+
+function updateInoButton() {
+  const btn = document.getElementById('ino-btn');
+  if (!btn) return;
+  if (getToken()) {
+    btn.textContent  = '✅ Inoreader conectado';
+    btn.style.color  = '#4ade80';
+    btn.style.borderColor = '#4ade80';
+  } else {
+    btn.textContent = '⚡ Conectar Inoreader';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   FETCH — Inoreader API (autenticado) → fallback rss2json
+   ═══════════════════════════════════════════════════ */
+
+async function fetchFromInoreaderAPI(token) {
+  const url = `${INO_API}/stream/contents/user/-/label/${encodeURIComponent(CONFIG.inoreaderFolder)}` +
+              `?n=${CONFIG.articlesPerLoad}&output=json`;
+  const res = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'AppId':  CONFIG.appId,
+      'AppKey': CONFIG.appKey,
+    },
+    signal: AbortSignal.timeout(20000),
+  });
+  if (res.status === 401) {
+    localStorage.removeItem(INO_TOKEN_KEY);
+    throw new Error('Token expirado — clique em "Conectar Inoreader" novamente.');
+  }
+  if (!res.ok) throw new Error(`Inoreader API: ${res.status}`);
+  const data = await res.json();
+  if (!data.items) throw new Error('Resposta vazia da API do Inoreader');
+
+  return data.items
+    .map(item => {
+      const link  = item.canonical?.[0]?.href || item.alternate?.[0]?.href || '#';
+      const src   = detectSource(link);
+      const title = (item.title || '').trim().replace(/\s+/g, ' ');
+      const desc  = item.summary?.content || item.content?.content || '';
+      return {
+        title,
+        link,
+        pubDate:     new Date((item.published || 0) * 1000),
+        sourceName:  src.name,
+        sourceShort: src.short,
+        sourceColor: src.color,
+        sectors:     classifySectors(title + ' ' + desc),
+      };
+    })
+    .filter(a => a.title.length > 5);
+}
+
+/* Fallback: 7 feeds via rss2json (sem login) */
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
+async function fetchOneFeed(source) {
+  const apiUrl = RSS2JSON + encodeURIComponent(source.rssUrl) + '&count=20';
+  const res    = await fetch(apiUrl, { signal: AbortSignal.timeout(15000) });
+  const data   = await res.json();
+  if (data.status !== 'ok' || !Array.isArray(data.items)) return [];
+  return data.items
+    .filter(item => item.title && item.title.trim().length > 5)
+    .map(item => ({
+      title:       (item.title || '').trim().replace(/\s+/g, ' '),
+      link:        item.link || item.guid || '#',
+      pubDate:     new Date(item.pubDate || item.published || Date.now()),
+      sourceName:  source.name,
+      sourceShort: source.short,
+      sourceColor: source.color,
+      sectors:     classifySectors((item.title || '') + ' ' + (item.description || '')),
+    }));
+}
+
+async function fetchAllFeeds() {
+  const results = await Promise.allSettled(SOURCE_MAP.map(s => fetchOneFeed(s)));
+  return results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value);
+}
+
+/* ═══════════════════════════════════════════════════
+   CARREGAMENTO PRINCIPAL
+   ═══════════════════════════════════════════════════ */
+async function loadAllNews() {
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+  btn.textContent = '↻ Buscando…';
+  document.getElementById('last-update-subtitle').textContent = 'Buscando notícias…';
+
+  // Carrega histórico do localStorage imediatamente
+  const history = loadHistory();
+  if (history.length > 0) {
+    allArticles = history;
+    renderNews();  // mostra histórico enquanto busca o fresco
+  } else {
+    document.getElementById('main-content').innerHTML =
+      `<div class="status-box"><div class="spinner"></div><div>Buscando notícias das 7 fontes…</div></div>`;
+  }
+
+  try {
+    const token = getToken();
+    const fresh = token
+      ? await fetchFromInoreaderAPI(token)
+      : await fetchAllFeeds();
+    allArticles = mergeArticles(history, fresh);
+    saveHistory(allArticles);
+  } catch (e) {
+    console.error('Erro ao carregar:', e);
+    if (allArticles.length === 0) {
+      document.getElementById('main-content').innerHTML = `
+        <div class="status-box">
+          <div class="icon">⚠️</div>
+          <div>Não foi possível carregar as notícias.<br>
+          <small style="color:#9ca3af">${e.message}</small><br><br>
+          <button class="btn btn-accent" onclick="loadAllNews()" style="margin-top:8px">Tentar novamente</button></div>
+        </div>`;
+      btn.disabled = false;
+      btn.textContent = '↻ Atualizar';
+      return;
+    }
+  }
+
+  lastLoadTime = new Date();
+  renderNews();
+  btn.disabled = false;
+  btn.textContent = '↻ Atualizar';
+
+  const fmtTime = lastLoadTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const total   = getFilteredArticles().length;
+  document.getElementById('last-update-subtitle').textContent =
+    `${total} notícias • atualizado às ${fmtTime}`;
+  document.getElementById('footer-status').textContent =
+    `Histórico: ${allArticles.length} notícias armazenadas • próxima atualização em ${CONFIG.autoRefreshMinutes} min`;
+
+  // Atualiza nota de histórico
+  if (allArticles.length > 0) {
+    const oldest = new Date(Math.min(...allArticles.map(a => a.pubDate.getTime())));
+    document.getElementById('history-note').textContent =
+      `Histórico desde ${oldest.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER
+   ═══════════════════════════════════════════════════ */
+function renderNews() {
+  const container = document.getElementById('main-content');
+  const searchVal = document.getElementById('search-input').value.toLowerCase();
+  const periodArticles = getFilteredArticles();
+
+  if (allArticles.length === 0) {
+    container.innerHTML = `
+      <div class="status-box">
+        <div class="icon">😶</div>
+        <div>Nenhuma notícia encontrada. Verifique sua conexão e tente novamente.</div>
+      </div>`;
+    return;
+  }
+
+  if (periodArticles.length === 0) {
+    container.innerHTML = `
+      <div class="status-box">
+        <div class="icon">📅</div>
+        <div>Sem notícias nesse período. Tente selecionar "Tudo" ou aguarde mais atualizações.</div>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+
+  if (currentSector === 'all') {
+    for (const sector of SECTORS) {
+      html += renderSectorSection(sector, searchVal, false, null, periodArticles);
+    }
+    const others = periodArticles.filter(a => a.sectors.length === 0);
+    if (others.length > 0) {
+      html += renderSectorSection(
+        { id: 'other', name: 'Outros / Macro', emoji: '🌐', color: '#95a5a6' },
+        searchVal, false, others, periodArticles
+      );
+    }
+  } else {
+    const sector = SECTORS.find(s => s.id === currentSector);
+    html += renderSectorSection(sector, searchVal, true, null, periodArticles);
+  }
+
+  container.innerHTML = html || `<div class="status-box"><div class="icon">🔍</div><div>Sem resultados para "${searchVal}".</div></div>`;
+}
+
+function renderSectorSection(sector, searchVal, forceShow, overrideArticles, periodArticles) {
+  const pool = periodArticles || getFilteredArticles();
+  const articles = overrideArticles || pool.filter(a =>
+    sector.id === 'other' ? a.sectors.length === 0 : a.sectors.includes(sector.id)
+  );
+
+  const filtered = searchVal
+    ? articles.filter(a => a.title.toLowerCase().includes(searchVal))
+    : articles;
+
+  if (filtered.length === 0 && !forceShow) return '';
+
+  let itemsHtml = filtered.length === 0
+    ? `<div class="status-box" style="padding:24px;font-size:13px;">Sem notícias nessa busca.</div>`
+    : filtered.map(a => renderArticle(a)).join('');
+
+  return `
+    <section class="sector-section" data-sector="${sector.id}">
+      <div class="sector-header">
+        <div class="sector-dot" style="background:${sector.color}"></div>
+        <span class="sector-title">${sector.emoji} ${sector.name}</span>
+        <span class="sector-count">${filtered.length}</span>
+      </div>
+      <div class="news-list">${itemsHtml}</div>
+    </section>`;
+}
+
+function renderArticle(a) {
+  const timeAgo = getTimeAgo(a.pubDate);
+  return `
+    <a class="news-item" href="${escHtml(a.link)}" target="_blank" rel="noopener">
+      <span class="news-bullet">•</span>
+      <div class="news-body">
+        <div class="news-title">${escHtml(a.title)}</div>
+        <div class="news-meta">
+          <span class="source-badge" style="background:${a.sourceColor}">${escHtml(a.sourceShort)}</span>
+          <span class="time-tag">${timeAgo}</span>
+        </div>
+      </div>
+    </a>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   HELPERS UI
+   ═══════════════════════════════════════════════════ */
+function switchTab(sector) {
+  currentSector = sector;
+  document.querySelectorAll('.tab-btn').forEach(t =>
+    t.classList.toggle('active', t.dataset.sector === sector));
+  renderNews();
+}
+
+function switchTimeRange(days) {
+  currentRange = days;
+  document.querySelectorAll('.timefilter-btn').forEach(b =>
+    b.classList.toggle('active', Number(b.dataset.range) === days));
+  renderNews();
+}
+
+function getFilteredArticles() {
+  if (currentRange === 0) return allArticles;
+  const cutoff = Date.now() - currentRange * 86400000;
+  return allArticles.filter(a => a.pubDate.getTime() > cutoff);
+}
+
+function filterSearch() {
+  renderNews();
+}
+
+function getTimeAgo(date) {
+  const diff = Date.now() - date.getTime();
+  if (isNaN(diff) || diff < 0) return '';
+  const min = Math.floor(diff / 60000);
+  if (min < 1)  return 'agora';
+  if (min < 60) return `há ${min} min`;
+  const h = Math.floor(min / 60);
+  if (h < 24)   return `há ${h}h`;
+  const d = Math.floor(h / 24);
+  return `há ${d}d`;
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ═══════════════════════════════════════════════════
+   DIGEST EMAIL
+   ═══════════════════════════════════════════════════ */
+function openDigest() {
+  const modal = document.getElementById('modal-overlay');
+  modal.classList.remove('hidden');
+  document.getElementById('digest-content').textContent = buildDigestText();
+}
+function closeDigest() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+function closeDigestOnOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeDigest();
+}
+
+function buildDigestText() {
+  const today = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  let txt = `Itaú BBA | Transportation & Capital Goods\n`;
+  txt += `📰 Notícias — ${today}\n`;
+  txt += `${'─'.repeat(50)}\n\n`;
+
+  for (const sector of SECTORS) {
+    const items = allArticles.filter(a => a.sectors.includes(sector.id)).slice(0, 8);
+    if (items.length === 0) continue;
+    txt += `${sector.emoji} ${sector.name.toUpperCase()}\n\n`;
+    for (const a of items) {
+      txt += `- ${a.title} (${a.sourceName})\n`;
+      txt += `  ${a.link}\n\n`;
+    }
+  }
+  txt += `\nGerado automaticamente via TransCap News Dashboard`;
+  return txt;
+}
+
+function copyDigest() {
+  const text = document.getElementById('digest-content').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = '✅ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar', 2000);
+  });
+}
+
+function sendEmailDigest() {
+  const subject = encodeURIComponent(`TransCap News — ${new Date().toLocaleDateString('pt-BR')}`);
+  const body    = encodeURIComponent(document.getElementById('digest-content').textContent);
+  window.open(`mailto:${CONFIG.digestEmail}?subject=${subject}&body=${body}`, '_blank');
+}
+
+/* ═══════════════════════════════════════════════════
+   AUTO-REFRESH
+   ═══════════════════════════════════════════════════ */
+setInterval(loadAllNews, CONFIG.autoRefreshMinutes * 60 * 1000);
+
+/* ── INICIALIZAR ── */
+updateInoButton();
+loadAllNews();
+</script>
+</body>
+</html>
