@@ -367,7 +367,6 @@ body {
     <div class="subtitle" id="last-update-subtitle">Carregando…</div>
   </div>
   <div class="header-right">
-    <button class="btn btn-outline" id="ino-btn" onclick="handleInoClick()" style="font-size:11px;">⚡ Conectar Inoreader</button>
     <button class="btn btn-outline" onclick="openDigest()">✉️ Gerar Digest</button>
     <button class="btn btn-accent" id="refresh-btn" onclick="loadAllNews()">↻ Atualizar</button>
   </div>
@@ -652,154 +651,29 @@ function mergeArticles(existing, fresh) {
 }
 
 /* ─────────────────────────────────────────────────
-   INOREADER OAUTH (Authorization Code Flow)
+   FETCH — news.json (gerado server-side por GitHub Action)
    ───────────────────────────────────────────────── */
-const INO_API = 'https://www.inoreader.com/reader/api/0';
-const INO_TOKEN_KEY = 'ino_access_token';
-const INO_REFRESH_KEY = 'ino_refresh_token';
-const INO_STATE_KEY = 'ino_oauth_state';
-
-function getRedirectUri() {
-  // Strip hash and query (so it matches what's registered)
-  return window.location.origin + window.location.pathname;
-}
-
-function getToken() {
-  return localStorage.getItem(INO_TOKEN_KEY);
-}
-
-function clearTokens() {
-  localStorage.removeItem(INO_TOKEN_KEY);
-  localStorage.removeItem(INO_REFRESH_KEY);
-}
-
-/* Exchange code for access_token via POST to /oauth2/token */
-async function exchangeCodeForToken(code) {
-  const body = new URLSearchParams({
-    code: code,
-    redirect_uri: getRedirectUri(),
-    client_id: CONFIG.appId,
-    client_secret: CONFIG.appKey,
-    scope: 'read',
-    grant_type: 'authorization_code',
-  });
-  const res = await fetch('https://www.inoreader.com/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Falha ao trocar code por token (${res.status}): ${errText.substring(0, 200)}`);
+async function fetchNewsJson() {
+  // Cache-buster para sempre pegar o JSON mais recente
+  const res = await fetch(`news.json?t=${Date.now()}`, { cache: 'no-store' });
+  if (res.status === 404) {
+    throw new Error('news.json ainda não foi gerado. Aguarde o workflow do GitHub Actions rodar (ou dispare manualmente).');
   }
+  if (!res.ok) throw new Error(`Falha ao ler news.json (HTTP ${res.status})`);
   const data = await res.json();
-  if (!data.access_token) throw new Error('Resposta sem access_token');
-  localStorage.setItem(INO_TOKEN_KEY, data.access_token);
-  if (data.refresh_token) localStorage.setItem(INO_REFRESH_KEY, data.refresh_token);
-  return data.access_token;
-}
 
-/* Check URL for OAuth callback (?code=... or ?error=...) */
-async function handleOAuthCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get('code');
-  const error = params.get('error');
-  const errorDesc = params.get('error_description');
-  const state = params.get('state');
-
-  if (error) {
-    history.replaceState(null, '', window.location.pathname);
-    showError(`Inoreader retornou erro: ${error}`, errorDesc || '');
-    return false;
-  }
-  if (!code) return false;
-
-  // Validate state to prevent CSRF
-  const expectedState = sessionStorage.getItem(INO_STATE_KEY);
-  if (expectedState && state !== expectedState) {
-    history.replaceState(null, '', window.location.pathname);
-    showError('OAuth state inválido (possível CSRF). Tente conectar de novo.', '');
-    return false;
-  }
-  sessionStorage.removeItem(INO_STATE_KEY);
-
-  // Show loading while exchanging
-  document.getElementById('main-content').innerHTML =
-    `<div class="status-box"><div class="spinner"></div><div>Conectando ao Inoreader…</div></div>`;
-  document.getElementById('last-update-subtitle').textContent = 'Autenticando…';
-
-  try {
-    await exchangeCodeForToken(code);
-    history.replaceState(null, '', window.location.pathname);
-    return true;
-  } catch (e) {
-    history.replaceState(null, '', window.location.pathname);
-    showError('Falha ao concluir a conexão com Inoreader.', e.message);
-    return false;
-  }
-}
-
-function handleInoClick() {
-  if (getToken()) {
-    if (confirm('Desconectar do Inoreader?')) {
-      clearTokens();
-      location.reload();
-    }
-  } else {
-    // Generate random state for CSRF protection
-    const state = Math.random().toString(36).substring(2) + Date.now().toString(36);
-    sessionStorage.setItem(INO_STATE_KEY, state);
-    const authUrl = 'https://www.inoreader.com/oauth2/auth?' +
-      `client_id=${CONFIG.appId}` +
-      `&redirect_uri=${encodeURIComponent(getRedirectUri())}` +
-      `&response_type=code&scope=read` +
-      `&state=${encodeURIComponent(state)}`;
-    window.location.href = authUrl;
-  }
-}
-
-function updateInoButton() {
-  const btn = document.getElementById('ino-btn');
-  if (!btn) return;
-  if (getToken()) {
-    btn.textContent = '✓ Inoreader conectado';
-    btn.style.color = '#4ade80';
-    btn.style.borderColor = '#4ade80';
-  } else {
-    btn.textContent = '⚡ Conectar Inoreader';
-    btn.style.color = '';
-    btn.style.borderColor = '';
-  }
-}
-
-/* ─────────────────────────────────────────────────
-   FETCH — Inoreader API
-   ───────────────────────────────────────────────── */
-async function fetchFromInoreaderAPI(token) {
-  const url = `${INO_API}/stream/contents/user/-/label/${encodeURIComponent(CONFIG.inoreaderFolder)}` +
-              `?n=${CONFIG.articlesPerLoad}&output=json`;
-  const res = await fetch(url, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'AppId': CONFIG.appId,
-      'AppKey': CONFIG.appKey,
-    },
-    signal: AbortSignal.timeout(20000),
-  });
-  if (res.status === 401) {
-    localStorage.removeItem(INO_TOKEN_KEY);
-    throw new Error('Token expirado — clique em "Conectar Inoreader" novamente.');
-  }
-  if (!res.ok) throw new Error(`Inoreader API erro ${res.status}`);
-  const data = await res.json();
-  if (!data.items) throw new Error('Resposta vazia da API do Inoreader');
-
-  return data.items
+  // O JSON tem o formato cru da API do Inoreader (items[])
+  const items = data.items || [];
+  return items
     .map(item => {
-      const link = item.canonical?.[0]?.href || item.alternate?.[0]?.href || '#';
+      const link = (item.canonical && item.canonical[0] && item.canonical[0].href)
+                || (item.alternate && item.alternate[0] && item.alternate[0].href)
+                || '#';
       const src = detectSource(link);
       const title = (item.title || '').trim().replace(/\s+/g, ' ');
-      const desc = item.summary?.content || item.content?.content || '';
+      const desc = (item.summary && item.summary.content)
+                || (item.content && item.content.content)
+                || '';
       return {
         title,
         link,
@@ -813,21 +687,26 @@ async function fetchFromInoreaderAPI(token) {
     .filter(a => a.title.length > 5);
 }
 
+function getFetchedAt(data) {
+  // O workflow grava _fetched_at na raiz do JSON
+  return data && data._fetched_at ? new Date(data._fetched_at) : null;
+}
+
 /* ─────────────────────────────────────────────────
    CARREGAMENTO PRINCIPAL
    ───────────────────────────────────────────────── */
-function showConnectBanner() {
+function showWaitingBanner(reason) {
   const container = document.getElementById('main-content');
   container.innerHTML = `
     <div class="connect-banner">
-      <div class="big-icon">🔌</div>
-      <h2>Conecte sua conta do Inoreader</h2>
-      <p>O dashboard busca notícias diretamente da sua pasta <strong>${CONFIG.inoreaderFolder}</strong> no Inoreader.<br>
-         Clique abaixo para autorizar — basta uma vez.</p>
-      <button class="btn-connect" onclick="handleInoClick()">⚡ Conectar Inoreader</button>
-      <div class="note">App ID: ${CONFIG.appId} · Sua sessão fica salva no navegador</div>
+      <div class="big-icon">⏳</div>
+      <h2>Aguardando primeira carga</h2>
+      <p>O workflow do GitHub Actions ainda não gerou o <code style="background:rgba(255,255,255,.15);padding:2px 6px;border-radius:4px">news.json</code>.<br>
+         ${escHtml(reason || '')}</p>
+      <button class="btn-connect" onclick="loadAllNews()">↻ Tentar de novo</button>
+      <div class="note">Verifique a aba <strong>Actions</strong> do repositório no GitHub</div>
     </div>`;
-  document.getElementById('last-update-subtitle').textContent = 'Aguardando conexão com Inoreader';
+  document.getElementById('last-update-subtitle').textContent = 'Aguardando dados';
 }
 
 function showError(message, detail) {
@@ -838,17 +717,10 @@ function showError(message, detail) {
       <h3>${escHtml(message)}</h3>
       ${detail ? `<div class="msg"><code>${escHtml(detail)}</code></div>` : ''}
       <button class="btn btn-accent" onclick="loadAllNews()">Tentar novamente</button>
-      <button class="btn btn-outline" style="background:var(--muted);color:#fff;margin-left:8px;" onclick="handleInoClick()">Reconectar Inoreader</button>
     </div>`;
 }
 
 async function loadAllNews() {
-  const token = getToken();
-  if (!token) {
-    showConnectBanner();
-    return;
-  }
-
   const btn = document.getElementById('refresh-btn');
   btn.disabled = true;
   btn.textContent = '↻ Buscando…';
@@ -861,17 +733,21 @@ async function loadAllNews() {
     renderNews();
   } else {
     document.getElementById('main-content').innerHTML =
-      `<div class="status-box"><div class="spinner"></div><div>Buscando notícias do Inoreader…</div></div>`;
+      `<div class="status-box"><div class="spinner"></div><div>Carregando notícias…</div></div>`;
   }
 
   try {
-    const fresh = await fetchFromInoreaderAPI(token);
+    const fresh = await fetchNewsJson();
     allArticles = mergeArticles(history, fresh);
     saveHistory(allArticles);
   } catch (e) {
     console.error('Erro ao carregar:', e);
     if (allArticles.length === 0) {
-      showError('Não foi possível carregar as notícias.', e.message);
+      if (e.message.includes('news.json ainda não foi gerado')) {
+        showWaitingBanner(e.message);
+      } else {
+        showError('Não foi possível carregar as notícias.', e.message);
+      }
       btn.disabled = false;
       btn.textContent = '↻ Atualizar';
       return;
@@ -1104,22 +980,9 @@ function sendEmailDigest() {
 /* ─────────────────────────────────────────────────
    AUTO-REFRESH + INIT
    ───────────────────────────────────────────────── */
-setInterval(() => {
-  if (getToken()) loadAllNews();
-}, CONFIG.autoRefreshMinutes * 60 * 1000);
+setInterval(loadAllNews, CONFIG.autoRefreshMinutes * 60 * 1000);
 
-(async function init() {
-  // If we just came back from Inoreader OAuth, handle the callback first
-  const hadCallback = await handleOAuthCallback();
-  updateInoButton();
-  // After successful callback OR if there's already a token, load news
-  if (hadCallback || getToken()) {
-    loadAllNews();
-  } else {
-    // Show the connect banner
-    showConnectBanner();
-  }
-})();
+loadAllNews();
 </script>
 </body>
 </html>
