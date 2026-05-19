@@ -1,598 +1,599 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TransCap News | IBBA</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TransCap News | IBBA</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --primary:   #1a2744;
-      --accent:    #f6931d;
-      --bg:        #f0f2f7;
-      --card:      #ffffff;
-      --text:      #1a1a2e;
-      --muted:     #6b7280;
-      --border:    #e5e7eb;
-      --hover:     #f9fafb;
-      --rental:    #e74c3c;
-      --concessions:#2980b9;
-      --airlines:  #16a085;
-      --capgoods:  #8e44ad;
-      --ab:        #c0392b;
-      --estadao:   #1a5276;
-      --globo:     #e67e22;
-      --valor:     #1e8449;
-      --bj:        #6c3483;
-      --pipeline:  #117a65;
-      --infomoney: #922b21;
-    }
+:root {
+  --primary: #1a2744;
+  --accent: #f6931d;
+  --bg: #f0f2f7;
+  --card: #ffffff;
+  --text: #1a1a2e;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --hover: #f9fafb;
+  --rental: #e74c3c;
+  --concessions:#2980b9;
+  --airlines: #16a085;
+  --capgoods: #8e44ad;
+  --ab: #c0392b;
+  --estadao: #1a5276;
+  --globo: #e67e22;
+  --valor: #1e8449;
+  --bj: #6c3483;
+  --pipeline: #117a65;
+  --infomoney: #922b21;
+  --folha: #34495e;
+}
 
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
 
-    /* ââ HEADER ââ */
-    .header {
-      background: var(--primary);
-      color: #fff;
-      padding: 14px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-    }
-    .header-left h1 {
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-    .header-left .subtitle {
-      font-size: 11px;
-      color: rgba(255,255,255,0.55);
-      margin-top: 2px;
-    }
-    .header-right { display: flex; gap: 8px; align-items: center; }
+/* HEADER */
+.header {
+  background: var(--primary);
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.header-left h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.header-left .subtitle { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.header-right { display: flex; gap: 8px; align-items: center; }
 
-    .btn {
-      border: none;
-      padding: 7px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: opacity .15s;
-    }
-    .btn:hover { opacity: .85; }
-    .btn-accent  { background: var(--accent); color: #fff; }
-    .btn-outline { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+.btn {
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: opacity .15s;
+}
+.btn:hover { opacity: .85; }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-outline { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.25); }
 
-    /* ââ TABS ââ */
-    .tabs-wrap {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 0 20px;
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .tabs-wrap::-webkit-scrollbar { display: none; }
-    .tab-btn {
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      cursor: pointer;
-      border: none;
-      border-bottom: 3px solid transparent;
-      background: none;
-      white-space: nowrap;
-      transition: color .15s, border-color .15s;
-    }
-    .tab-btn:hover { color: var(--primary); }
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+/* TABS */
+.tabs-wrap {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-wrap::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  white-space: nowrap;
+  transition: color .15s, border-color .15s;
+}
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
+.tab-btn[data-sector="rental"].active { border-bottom-color: var(--rental); color: var(--rental); }
+.tab-btn[data-sector="concessions"].active { border-bottom-color: var(--concessions); color: var(--concessions); }
+.tab-btn[data-sector="airlines"].active { border-bottom-color: var(--airlines); color: var(--airlines); }
+.tab-btn[data-sector="capgoods"].active { border-bottom-color: var(--capgoods); color: var(--capgoods); }
 
-    /* sector accent colors */
-    .tab-btn[data-sector="rental"].active    { border-bottom-color: var(--rental); color: var(--rental); }
-    .tab-btn[data-sector="concessions"].active { border-bottom-color: var(--concessions); color: var(--concessions); }
-    .tab-btn[data-sector="airlines"].active  { border-bottom-color: var(--airlines); color: var(--airlines); }
-    .tab-btn[data-sector="capgoods"].active  { border-bottom-color: var(--capgoods); color: var(--capgoods); }
+/* SEARCH */
+.search-wrap {
+  padding: 12px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+.search-input {
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 14px 8px 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+  outline: none;
+  transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--accent); }
 
-    /* ââ SEARCH BAR ââ */
-    .search-wrap {
-      padding: 12px 24px;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-    }
-    .search-input {
-      width: 100%;
-      max-width: 480px;
-      padding: 8px 14px 8px 34px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 13px;
-      color: var(--text);
-      background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
-      outline: none;
-      transition: border-color .15s;
-    }
-    .search-input:focus { border-color: var(--accent); }
+/* MAIN */
+.content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
 
-    /* ââ MAIN CONTENT ââ */
-    .content {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 24px 20px 40px;
-    }
+.sector-section { margin-bottom: 32px; }
+.sector-section.hidden { display: none; }
+.sector-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.sector-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.sector-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+.sector-count {
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
 
-    /* ââ SECTOR SECTION ââ */
-    .sector-section { margin-bottom: 32px; }
-    .sector-section.hidden { display: none; }
+.news-list {
+  background: var(--card);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.news-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: background .12s;
+}
+.news-item:last-child { border-bottom: none; }
+.news-item:hover { background: var(--hover); }
+.news-bullet { color: var(--accent); font-size: 14px; flex-shrink: 0; margin-top: 2px; line-height: 1; }
+.news-body { flex: 1; min-width: 0; }
+.news-title { font-size: 13.5px; line-height: 1.5; color: var(--text); font-weight: 500; }
+.news-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.source-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 4px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.time-tag { font-size: 11px; color: var(--muted); }
 
-    .sector-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .sector-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .sector-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    .sector-count {
-      background: var(--bg);
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 99px;
-    }
+/* STATUS / LOADING */
+.status-box {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.status-box .icon { font-size: 32px; margin-bottom: 10px; }
+.spinner {
+  display: inline-block;
+  width: 28px; height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin-bottom: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ââ NEWS LIST ââ */
-    .news-list {
-      background: var(--card);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .news-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--border);
-      text-decoration: none;
-      color: inherit;
-      transition: background .12s;
-    }
-    .news-item:last-child { border-bottom: none; }
-    .news-item:hover { background: var(--hover); }
-    .news-item.search-hidden { display: none; }
+/* CONNECT BANNER */
+.connect-banner {
+  background: linear-gradient(135deg, #1a2744, #2c3e6e);
+  color: #fff;
+  border-radius: 14px;
+  padding: 36px 28px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 600px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+}
+.connect-banner .big-icon { font-size: 48px; margin-bottom: 16px; }
+.connect-banner h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.connect-banner p { font-size: 14px; opacity: .8; margin-bottom: 22px; line-height: 1.6; }
+.connect-banner .btn-connect {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.connect-banner .btn-connect:hover { opacity: .9; }
+.connect-banner .note {
+  font-size: 11px;
+  opacity: .55;
+  margin-top: 16px;
+}
 
-    .news-bullet {
-      color: var(--accent);
-      font-size: 14px;
-      flex-shrink: 0;
-      margin-top: 2px;
-      line-height: 1;
-    }
-    .news-body { flex: 1; min-width: 0; }
-    .news-title {
-      font-size: 13.5px;
-      line-height: 1.5;
-      color: var(--text);
-      font-weight: 500;
-    }
-    .news-meta {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-    .source-badge {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 1px 7px;
-      border-radius: 4px;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: .3px;
-    }
-    .time-tag {
-      font-size: 11px;
-      color: var(--muted);
-    }
+/* ERROR */
+.error-box {
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 600px;
+  text-align: center;
+}
+.error-box .icon { font-size: 28px; margin-bottom: 8px; }
+.error-box h3 { font-size: 15px; color: #c53030; margin-bottom: 6px; }
+.error-box .msg { font-size: 13px; color: #742a2a; margin-bottom: 12px; }
+.error-box code {
+  display: inline-block;
+  background: #fed7d7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  word-break: break-all;
+}
 
-    /* ââ EMPTY / LOADING / ERROR ââ */
-    .status-box {
-      text-align: center;
-      padding: 48px 20px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-    .status-box .icon { font-size: 32px; margin-bottom: 10px; }
-    .spinner {
-      display: inline-block;
-      width: 28px; height: 28px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-      margin-bottom: 12px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* FOOTER */
+.footer-status {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  padding-bottom: 16px;
+}
 
-    /* ââ FOOTER STATUS ââ */
-    .footer-status {
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-      padding-bottom: 16px;
-    }
+/* LEGEND */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.legend-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; }
+.legend-item {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  letter-spacing: .3px;
+}
 
-    /* ââ SOURCE LEGEND ââ */
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 12px 24px;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      align-items: center;
-    }
-    .legend-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; }
-    .legend-item {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
-      color: #fff;
-      letter-spacing: .3px;
-    }
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 { font-size: 16px; font-weight: 700; }
+.modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--muted); line-height: 1; }
+.modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.digest-text {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--text);
+  background: var(--bg);
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
 
-    /* ââ DIGEST MODAL ââ */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-overlay.hidden { display: none; }
-    .modal {
-      background: #fff;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 640px;
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,.3);
-    }
-    .modal-header {
-      padding: 18px 20px 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .modal-header h2 { font-size: 16px; font-weight: 700; }
-    .modal-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--muted); line-height: 1; }
-    .modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
-    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-    .digest-text {
-      font-family: monospace;
-      font-size: 12px;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      color: var(--text);
-      background: var(--bg);
-      padding: 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }
+/* TIME FILTER */
+.timefilter-wrap {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.timefilter-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; }
+.timefilter-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.timefilter-btn:hover { border-color: var(--primary); color: var(--primary); }
+.timefilter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.history-note { font-size: 10px; color: var(--muted); margin-left: auto; }
 
-    /* ââ TIME FILTER ââ */
-    .timefilter-wrap {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: 8px 20px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .timefilter-label { font-size: 11px; color: var(--muted); font-weight: 600; margin-right: 4px; }
-    .timefilter-btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 99px;
-      cursor: pointer;
-      transition: all .15s;
-    }
-    .timefilter-btn:hover { border-color: var(--primary); color: var(--primary); }
-    .timefilter-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
-    }
-    .history-note {
-      font-size: 10px;
-      color: var(--muted);
-      margin-left: auto;
-    }
-
-    @media (max-width: 600px) {
-      .header { padding: 12px 16px; }
-      .content { padding: 16px 12px 32px; }
-      .search-wrap { padding: 10px 12px; }
-      .legend { padding: 10px 12px; }
-    }
-  </style>
+@media (max-width: 600px) {
+  .header { padding: 12px 16px; }
+  .content { padding: 16px 12px 32px; }
+  .search-wrap { padding: 10px 12px; }
+  .legend { padding: 10px 12px; }
+}
+</style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="header-left">
-    <h1>ð° TransCap News</h1>
-    <div class="subtitle" id="last-update-subtitle">Buscando notÃ­ciasâ¦</div>
+    <h1>📰 TransCap News</h1>
+    <div class="subtitle" id="last-update-subtitle">Carregando…</div>
   </div>
   <div class="header-right">
-    <button class="btn btn-outline" id="ino-btn" onclick="handleInoClick()" style="font-size:11px;">â¡ Conectar Inoreader</button>
-    <button class="btn btn-outline" onclick="openDigest()">âï¸ Gerar Digest</button>
-    <button class="btn btn-accent" id="refresh-btn" onclick="loadAllNews()">â» Atualizar</button>
+    <button class="btn btn-outline" id="ino-btn" onclick="handleInoClick()" style="font-size:11px;">⚡ Conectar Inoreader</button>
+    <button class="btn btn-outline" onclick="openDigest()">✉️ Gerar Digest</button>
+    <button class="btn btn-accent" id="refresh-btn" onclick="loadAllNews()">↻ Atualizar</button>
   </div>
 </header>
 
-<!-- TABS -->
 <nav class="tabs-wrap">
-  <button class="tab-btn active" data-sector="all"         onclick="switchTab('all')">Todas</button>
-  <button class="tab-btn"         data-sector="rental"     onclick="switchTab('rental')">ð Rental &amp; Auto</button>
-  <button class="tab-btn"         data-sector="concessions"onclick="switchTab('concessions')">ð ConcessÃµes</button>
-  <button class="tab-btn"         data-sector="airlines"   onclick="switchTab('airlines')">âï¸ Airlines</button>
-  <button class="tab-btn"         data-sector="capgoods"   onclick="switchTab('capgoods')">ð­ Capital Goods</button>
+  <button class="tab-btn active" data-sector="all" onclick="switchTab('all')">Todas</button>
+  <button class="tab-btn" data-sector="rental" onclick="switchTab('rental')">🚗 Rental &amp; Auto</button>
+  <button class="tab-btn" data-sector="concessions" onclick="switchTab('concessions')">🛣️ Concessões</button>
+  <button class="tab-btn" data-sector="airlines" onclick="switchTab('airlines')">✈️ Airlines</button>
+  <button class="tab-btn" data-sector="capgoods" onclick="switchTab('capgoods')">🏭 Capital Goods</button>
 </nav>
 
-<!-- SOURCE LEGEND -->
 <div class="legend">
   <span class="legend-label">Fontes:</span>
   <span class="legend-item" style="background:var(--ab)">Automotive Business</span>
-  <span class="legend-item" style="background:var(--estadao)">EstadÃ£o</span>
+  <span class="legend-item" style="background:var(--estadao)">Estadão</span>
   <span class="legend-item" style="background:var(--globo)">O Globo</span>
   <span class="legend-item" style="background:var(--valor)">Valor</span>
+  <span class="legend-item" style="background:var(--folha)">Folha</span>
   <span class="legend-item" style="background:var(--bj)">Brazil Journal</span>
   <span class="legend-item" style="background:var(--pipeline)">Pipeline Valor</span>
   <span class="legend-item" style="background:var(--infomoney)">InfoMoney</span>
 </div>
 
-<!-- TIME FILTER -->
 <div class="timefilter-wrap">
-  <span class="timefilter-label">PerÃ­odo:</span>
-  <button class="timefilter-btn active" data-range="1"  onclick="switchTimeRange(1)">Hoje</button>
-  <button class="timefilter-btn"        data-range="3"  onclick="switchTimeRange(3)">3 dias</button>
-  <button class="timefilter-btn"        data-range="7"  onclick="switchTimeRange(7)">7 dias</button>
-  <button class="timefilter-btn"        data-range="30" onclick="switchTimeRange(30)">30 dias</button>
-  <button class="timefilter-btn"        data-range="0"  onclick="switchTimeRange(0)">Tudo</button>
+  <span class="timefilter-label">Período:</span>
+  <button class="timefilter-btn active" data-range="1" onclick="switchTimeRange(1)">Hoje (24h)</button>
+  <button class="timefilter-btn" data-range="2" onclick="switchTimeRange(2)">Ontem</button>
+  <button class="timefilter-btn" data-range="7" onclick="switchTimeRange(7)">7 dias</button>
+  <button class="timefilter-btn" data-range="30" onclick="switchTimeRange(30)">30 dias</button>
+  <button class="timefilter-btn" data-range="0" onclick="switchTimeRange(0)">Tudo</button>
   <span class="history-note" id="history-note"></span>
 </div>
 
-<!-- SEARCH -->
 <div class="search-wrap">
-  <input class="search-input" id="search-input" type="text" placeholder="Buscar notÃ­ciasâ¦" oninput="filterSearch()" />
+  <input class="search-input" id="search-input" type="text" placeholder="Buscar notícias…" oninput="filterSearch()" />
 </div>
 
-<!-- MAIN CONTENT -->
 <main class="content" id="main-content">
   <div class="status-box">
     <div class="spinner"></div>
-    <div>Buscando notÃ­cias das 7 fontesâ¦</div>
+    <div>Inicializando…</div>
   </div>
 </main>
 
 <div class="footer-status" id="footer-status"></div>
 
-<!-- DIGEST MODAL -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeDigestOnOverlay(event)">
   <div class="modal">
     <div class="modal-header">
-      <h2>âï¸ Digest do Dia</h2>
-      <button class="modal-close" onclick="closeDigest()">Ã</button>
+      <h2>✉️ Digest do Dia</h2>
+      <button class="modal-close" onclick="closeDigest()">×</button>
     </div>
     <div class="modal-body">
-      <pre class="digest-text" id="digest-content">Gerandoâ¦</pre>
+      <pre class="digest-text" id="digest-content">Gerando…</pre>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-accent" onclick="copyDigest()">ð Copiar</button>
-      <button class="btn btn-outline" style="background:var(--primary);color:#fff;" onclick="sendEmailDigest()">ð§ Abrir no Email</button>
+      <button class="btn btn-accent" onclick="copyDigest()">📋 Copiar</button>
+      <button class="btn btn-outline" style="background:var(--primary);color:#fff;" onclick="sendEmailDigest()">📧 Abrir no Email</button>
       <button class="btn btn-outline" style="background:var(--muted);color:#fff;" onclick="closeDigest()">Fechar</button>
     </div>
   </div>
 </div>
 
 <script>
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   CONFIGURAÃÃO â edite aqui para personalizar
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
-
+/* ─────────────────────────────────────────────────
+   CONFIGURAÇÃO — edite aqui para personalizar
+   ───────────────────────────────────────────────── */
 const CONFIG = {
-  digestEmail:        'pedrotineo19@gmail.com',
+  digestEmail: 'pedrotineo19@gmail.com',
   autoRefreshMinutes: 30,
-  historyDays:        30,
-  appId:              '1000013333',
-  appKey:             '7cJytlQXdf_BAM9_FT1m0193F75Qqa_b',
-  inoreaderFolder:    'TransCap',
-  articlesPerLoad:    200,
+  historyDays: 30,
+  appId: '1000013333',
+  appKey: '7cJytlQXdf_BAM9_FT1m0193F75Qqa_b',
+  inoreaderFolder: 'TransCap',
+  articlesPerLoad: 200,
 };
 
-/* ââ Mapeamento de domÃ­nio â fonte ââ */
+/* Mapeamento de domínio → fonte */
 const SOURCE_MAP = [
-  { domain: 'automotivebusiness.com.br', name: 'Automotive Business', short: 'Autom.Business', color: '#c0392b',
-    rssUrl: 'https://www.automotivebusiness.com.br/feed' },
-  { domain: 'estadao.com.br',            name: 'EstadÃ£o',             short: 'EstadÃ£o',        color: '#1a5276',
-    rssUrl: 'https://economia.estadao.com.br/rss2.xml' },
-  { domain: 'oglobo.globo.com',          name: 'O Globo',              short: 'O Globo',        color: '#e67e22',
-    rssUrl: 'https://oglobo.globo.com/economia/rss.xml' },
-  { domain: 'valor.globo.com',           name: 'Valor EconÃ´mico',      short: 'Valor',          color: '#1e8449',
-    rssUrl: 'https://valor.globo.com/rss20.xml' },
-  { domain: 'braziljournal.com',         name: 'Brazil Journal',       short: 'Brazil Journal', color: '#6c3483',
-    rssUrl: 'https://braziljournal.com/feed/' },
-  { domain: 'pipelinevalor.globo.com',   name: 'Pipeline Valor',       short: 'Pipeline',       color: '#117a65',
-    rssUrl: 'https://pipelinevalor.globo.com/feed/' },
-  { domain: 'infomoney.com.br',          name: 'InfoMoney' ,            short: 'InfoMoney',      color: '#922b21',
-    rssUrl: 'https://www.infomoney.com.br/feed/' },
+  { domain: 'automotivebusiness.com.br', name: 'Automotive Business', short: 'Autom.Business', color: '#c0392b' },
+  { domain: 'estadao.com.br',            name: 'Estadão',              short: 'Estadão',         color: '#1a5276' },
+  { domain: 'oglobo.globo.com',          name: 'O Globo',              short: 'O Globo',         color: '#e67e22' },
+  { domain: 'g1.globo.com',              name: 'G1',                   short: 'G1',              color: '#e67e22' },
+  { domain: 'globorural.globo.com',      name: 'Globo Rural',          short: 'Globo Rural',     color: '#e67e22' },
+  { domain: 'valor.globo.com',           name: 'Valor Econômico',      short: 'Valor',           color: '#1e8449' },
+  { domain: 'pipelinevalor.globo.com',   name: 'Pipeline Valor',       short: 'Pipeline',        color: '#117a65' },
+  { domain: 'folha.uol.com.br',          name: 'Folha de S. Paulo',    short: 'Folha',           color: '#34495e' },
+  { domain: 'braziljournal.com',         name: 'Brazil Journal',       short: 'Brazil Journal',  color: '#6c3483' },
+  { domain: 'infomoney.com.br',          name: 'InfoMoney',            short: 'InfoMoney',       color: '#922b21' },
+  { domain: 'neofeed.com.br',            name: 'NeoFeed',              short: 'NeoFeed',         color: '#16a085' },
+  { domain: 'moneytimes.com.br',         name: 'Money Times',          short: 'MoneyTimes',      color: '#7f8c8d' },
+  { domain: 'bloomberglinea.com.br',     name: 'Bloomberg Línea',      short: 'Bloomberg',       color: '#2c3e50' },
+  { domain: 'cnnbrasil.com.br',          name: 'CNN Brasil',           short: 'CNN Brasil',      color: '#cc0000' },
+  { domain: 'agrolink.com.br',           name: 'Agrolink',             short: 'Agrolink',        color: '#27ae60' },
+  { domain: 'agfeed.com.br',             name: 'AgFeed',               short: 'AgFeed',          color: '#229954' },
 ];
 
-/* ââ Setores e suas palavras-chave ââ */
+/* Setores (keywords refinadas com base no histórico real do WhatsApp) */
 const SECTORS = [
   {
-    id: 'rental', name: 'Rental & Automotivo', emoji: 'ð', color: '#e74c3c',
+    id: 'rental', name: 'Rental & Automotivo', emoji: '🚗', color: '#e74c3c',
     keywords: [
-      // Empresas de locaÃ§Ã£o cobertas
-      'localiza','movida','unidas','vamos ','vamo3','armac', 'mills ',
-      'tegma','rent3','movi3','locadora','renovar frota','frota de veÃ­c',
+      // Locação Brasil
+      'localiza','movida','unidas','vamos ','vamo3','rent3','movi3','armac',
+      'tegma','tgma3','locadora','renovar frota','frota de veíc','gtf ','rac ',
       // Montadoras globais
       'volkswagen','vw ','byd','stellantis','tesla','bmw','fiat','peugeot',
-      'ford ','toyota ','general motors','gm ','chevrolet','hyundai',
-      'renault','nissan','honda ','gwm ','gac motors','gac ','xiaomi',
-      'nio ','vinfast','montadora','anfavea','tavares',
-      // Dados e Ã­ndices do setor
-      'fenabrave','emplacamento','anfavea','fipe ','idat ',
-      'seminovos','carro usado','veÃ­culo usado','usados ',
-      'financiamento de veÃ­culo','financiamento automotivo','crÃ©dito automotivo',
-      'vendas de veÃ­culos','produÃ§Ã£o de veÃ­culos','exportaÃ§Ã£o de veÃ­culos',
-      // RegulatÃ³rio automotivo
-      'ipva','dpvat','imposto seletivo veÃ­culos','imposto seletivo automotiv',
-      // EletrificaÃ§Ã£o
-      'carro elÃ©trico','veÃ­culo elÃ©trico','eletrificado','plug-in',
-      'hÃ­brido flex','elÃ©trico chinÃªs','frota elÃ©trica',
+      'ford ','toyota','general motors',' gm ','chevrolet','hyundai','kia ',
+      'renault','nissan','honda','gwm','gac motors','gac ','xiaomi',
+      'nio ','vinfast','montadora','anfavea','tavares','chery',
+      // Dados e índices
+      'fenabrave','emplacamento','fipe','idat','seminovos',
+      'carro usado','veículo usado','usados ',
+      'financiamento de veículo','financiamento automotivo','crédito automotivo',
+      'vendas de veículos','produção de veículos','exportação de veículos',
+      // Regulatório
+      'ipva','dpvat','imposto seletivo veíc','imposto seletivo automotiv',
+      // Eletrificação
+      'carro elétrico','veículo elétrico','eletrificado','plug-in',
+      'híbrido flex','elétrico chinês','frota elétrica','e-veículo',
       // Outros
-      'automob','setor automotivo','indÃºstria automotiva',
-      'tarifas trump','guerra comercial automotiv',
+      'automob','setor automotivo','indústria automotiva','autopeç',
+      'tarifas trump','guerra comercial automotiv','ev brasil',
     ],
   },
   {
-    id: 'concessions', name: 'ConcessÃµes & LogÃ­stica', emoji: 'ð', color: '#2980b9',
+    id: 'concessions', name: 'Concessões & Logística', emoji: '🛣️', color: '#2980b9',
     keywords: [
-      // Empresas rodoviÃ¡rias cobertas
-      'ccr ','ecorodovias','ecoporto','epr ','rodovias do tietÃª',
-      'rota da celulose','rota verde','sorocabana','nova raposo',
-      'repactuaÃ§Ã£o de rodov','br-163','artesp',
+      // Rodoviárias
+      'ccr ','ccro3','ecorodovias','ecor3','ecoporto','epr ','rota da celulose',
+      'rota verde','sorocabana','nova raposo','rodovias do tietê',
+      'repactuação de rodov','br-163','artesp','dersa',
       // Ferrovias
-      'rumo ','rumo logÃ­stica','ferrovia','leilÃ£o de ferrovia',
-      'estrada de ferro','malha norte','malha sul',
-      'fs infraestrutura','locomotiva','vagÃ£o','frete ferroviÃ¡rio',
-      'vale ferrov','acordo ferrov',
+      'rumo ','rumo logística','rail3','ferrovia','leilão de ferrov',
+      'estrada de ferro','malha norte','malha sul','fs infraestrutura',
+      'locomotiva','vagão','frete ferroviário','vale ferrov','acordo ferrov',
       // Hidrovias e portos
       'hidrovias do brasil','hbsa','hbsa3','hidrovia','cabotagem',
-      'santos brasil','porto de santos','terminal portuÃ¡rio',
-      'itaguaÃ­','leilÃ£o portuÃ¡rio','tÃºnel santos','porto ',
-      // LogÃ­stica rodoviÃ¡ria
-      'jsl ','jslg3','simpar','tegma','tgma3',
-      'transporte de veÃ­culos','logÃ­stica rodoviÃ¡ria',
-      // Aeroportos (concessÃµes de infraestrutura)
-      'aena ','galeÃ£o','santos dumont','viracopos','congonhas',
-      'leilÃ£o de aeroporto',
+      'santos brasil','stbp3','porto de santos','terminal portuário',
+      'itaguaí','leilão portuário','túnel santos','porto ','wilson sons',
+      // Logística rodoviária
+      'jsl ','jslg3','simpar','simh3','tegma','tgma3',
+      'transporte de veículos','logística rodoviária',
+      // Aeroportos
+      'aena ','galeão','santos dumont','viracopos','congonhas',
+      'leilão de aeroporto','rio galeão','floripa airport',
       // Infraestrutura geral
-      'rodovia','concessÃ£o rodoviÃ¡ria','leilÃ£o de rodov','leilÃ£o rodoviÃ¡rio',
-      'ministÃ©rio dos transportes','antt ','antaq ',
-      'pedÃ¡gio eletrÃ´nico','ponte jk','infraestrutura de transport',
-      'concessÃ£o de transport','leilÃ£o de transport',
-      // Agro/logÃ­stica (volumes Rumo)
-      'frete de grÃ£os','exportaÃ§Ã£o de grÃ£os','safra ','soja ','milho ',
-      'agronegÃ³cio','volumes rumo','esmagamento de soja',
+      'rodovia','concessão rodoviária','leilão de rodov','leilão rodoviário',
+      'ministério dos transportes','antt ','antaq ','agência nacional de transportes',
+      'pedágio eletrônico','ponte jk','infraestrutura de transport',
+      'concessão de transport','leilão de transport',
+      // Agro / logística
+      'frete de grãos','exportação de grãos','safra ','soja ','milho ',
+      'agronegócio','volumes rumo','esmagamento de soja','algodão',
+      'porto de paranaguá','exportação agro',
     ],
   },
   {
-    id: 'airlines', name: 'Airlines', emoji: 'âï¸', color: '#16a085',
+    id: 'airlines', name: 'Airlines', emoji: '✈️', color: '#16a085',
     keywords: [
-      // Companhias aÃ©reas brasileiras
-      'gol linhas','gol aÃ©rea','gol reestrutur','gol anuncia',
-      'azul linhas','azul aÃ©rea','azul reestrutur',
-      'latam airlines','latam ',
+      // Companhias brasileiras
+      'gol linhas','gol aérea','gol reestrutur','gol anuncia','goll4','gol3',
+      'azul linhas','azul aérea','azul reestrutur','azul4','azul3',
+      'latam airlines','latam ','latam3',
       // Internacionais relevantes
       'avianca','air france','klm','tap ','jetblue','sky airlines',
       'lufthansa','united airlines','american airlines',
-      'aerolÃ­neas argentinas',
-      // Fabricantes aeronÃ¡uticos
-      'embraer','eve ','evtol','carro voador',
+      'aerolíneas argentinas','iberia ','emirates','qatar airways',
+      // Fabricantes
+      'embraer','embr3','eve ','evtol','evtol embraer','carro voador',
       'kc-390','super tucano','e195','e175','e2 ','e1 ',
-      'boeing','airbus','a320','a321','787','737',
-      // Setor aÃ©reo
-      'companhia aÃ©rea','aviaÃ§Ã£o civil','anac ','aeronave',
-      'passagem aÃ©rea','atraso de voo','setor aÃ©reo',
-      'combustÃ­vel de aviaÃ§Ã£o','qav ','querosene de aviaÃ§Ã£o',
-      'reestruturaÃ§Ã£o aÃ©rea','dÃ­vida aÃ©rea',
-      'voa brasil','iata ','passageiro aÃ©reo',
-      // Aeroportos (operaÃ§Ãµes)
-      'congonhas','guarulhos','galeÃ£o','viracopos','santos dumont',
+      'boeing','airbus','a320','a321','a350','787','777','737',
+      // Setor aéreo
+      'companhia aérea','aviação civil','anac ','aeronave','aérea',
+      'passagem aérea','atraso de voo','setor aéreo',
+      'combustível de aviação','qav ','querosene de aviação',
+      'reestruturação aérea','dívida aérea','chapter 11',
+      'voa brasil','iata ','passageiro aéreo','load factor','yield',
+      // Aeroportos (operação)
+      'congonhas','guarulhos','galeão','viracopos','santos dumont',
     ],
   },
   {
-    id: 'capgoods', name: 'Capital Goods', emoji: 'ð­', color: '#8e44ad',
+    id: 'capgoods', name: 'Capital Goods', emoji: '🏭', color: '#8e44ad',
     keywords: [
       // Empresas cobertas
       'weg ','wege3','marcopolo','pomo3','tupy ','tupy3',
-      'gps participaÃ§Ãµes','ggps3','grsa ',
-      'randon','fras-le','frasle','fras le',
+      'gps participaç','ggps3','grsa ',
+      'randon','rapt4','rapt3','fras-le','frasle','fras le',
       'iochpe','maxion','mypk3',
       'mahle ','priner','prnr3',
       'aeris ','aeri3',
-      // Produtos e temas industriais
-      'implementos rodoviÃ¡rios','Ã´nibus elÃ©trico','caminhÃ£o elÃ©trico',
-      'Ã´nibus a biometano','veÃ­culos pesados','mÃ¡quinas agrÃ­colas',
+      // Produtos industriais
+      'implementos rodoviários','ônibus elétrico','caminhão elétrico',
+      'ônibus a biometano','veículos pesados','máquinas agrícolas',
       'bens de capital','abimaq','fornecedor automotiv',
-      'peÃ§as automotivas','autopeÃ§as',
-      // Energia renovÃ¡vel
-      'energia eÃ³lica','eÃ³lica offshore','energia solar','solar flutuante',
-      'biometano','hidrogÃªnio verde','bess ','t&d ',
-      'turbina eÃ³lica','parque eÃ³lico','parque solar',
-      'armazenamento de energia','fundo clima','leilÃ£o de energia',
-      'hidrelÃ©trica','energia renovÃ¡vel',
+      'peças automotivas','autopeças','autopeça',
+      // Energia renovável
+      'energia eólica','eólica offshore','energia solar','solar flutuante',
+      'biometano','hidrogênio verde','bess ','t&d ',
+      'turbina eólica','parque eólico','parque solar',
+      'armazenamento de energia','fundo clima','leilão de energia',
+      'hidrelétrica','energia renovável','geração distribuída',
       // Macro industrial
-      'produÃ§Ã£o industrial','indÃºstria de transformaÃ§Ã£o',
-      'importaÃ§Ã£o de mÃ¡quinas','descarbonizaÃ§Ã£o industrial',
+      'produção industrial','indústria de transformação',
+      'importação de máquinas','descarbonização industrial',
       'pmi industrial','atividade industrial','capacidade instalada',
-      'data center','transformadores elÃ©tricos','motores elÃ©tricos',
-      'manufatura','indÃºstria pesada',
+      'data center','transformadores elétricos','motores elétricos',
+      'manufatura','indústria pesada','semicondutor',
     ],
   },
 ];
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   ESTADO GLOBAL
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
-let allArticles    = [];   // histÃ³rico completo (localStorage + fresh)
-let currentSector  = 'all';
-let currentRange   = 1;    // dias exibidos (1 = hoje, 0 = tudo)
-let lastLoadTime   = null;
+/* ─────────────────────────────────────────────────
+   ESTADO
+   ───────────────────────────────────────────────── */
+let allArticles = [];
+let currentSector = 'all';
+let currentRange = 1;
+let lastLoadTime = null;
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   DETECÃÃO DE FONTE pelo domÃ­nio do link
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
+/* ─────────────────────────────────────────────────
+   DETECÇÃO DE FONTE
+   ───────────────────────────────────────────────── */
 function detectSource(link) {
   try {
     const hostname = new URL(link).hostname;
@@ -600,7 +601,7 @@ function detectSource(link) {
       if (hostname.includes(s.domain)) return s;
     }
   } catch(_) {}
-  return { name: 'Inoreader', short: 'Outros', color: '#95a5a6' };
+  return { name: 'Outros', short: 'Outros', color: '#95a5a6' };
 }
 
 function classifySectors(text) {
@@ -617,10 +618,10 @@ function classifySectors(text) {
   return matched;
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   HISTÃRICO LOCAL (localStorage)
-   ââââââââââââââââââââââââââââââââââââââââââââââââââ */
-const HISTORY_KEY = 'transcap_history_v1';
+/* ─────────────────────────────────────────────────
+   HISTÓRICO LOCAL
+   ───────────────────────────────────────────────── */
+const HISTORY_KEY = 'transcap_history_v2';
 
 function loadHistory() {
   try {
@@ -650,10 +651,10 @@ function mergeArticles(existing, fresh) {
   return [...existing, ...newOnes].sort((a, b) => b.pubDate - a.pubDate);
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   INOREADER OAUTH2
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
-const INO_API    = 'https://www.inoreader.com/reader/api/0';
+/* ─────────────────────────────────────────────────
+   INOREADER OAUTH (Implicit Flow)
+   ───────────────────────────────────────────────── */
+const INO_API = 'https://www.inoreader.com/reader/api/0';
 const INO_TOKEN_KEY = 'ino_access_token';
 
 function getRedirectUri() {
@@ -664,7 +665,7 @@ function checkOAuthCallback() {
   const hash = window.location.hash;
   if (!hash || !hash.includes('access_token')) return null;
   const params = new URLSearchParams(hash.slice(1));
-  const token  = params.get('access_token');
+  const token = params.get('access_token');
   if (token) {
     localStorage.setItem(INO_TOKEN_KEY, token);
     history.replaceState(null, '', window.location.pathname);
@@ -696,124 +697,118 @@ function updateInoButton() {
   const btn = document.getElementById('ino-btn');
   if (!btn) return;
   if (getToken()) {
-    btn.textContent  = 'â Inoreader conectado';
-    btn.style.color  = '#4ade80';
+    btn.textContent = '✓ Inoreader conectado';
+    btn.style.color = '#4ade80';
     btn.style.borderColor = '#4ade80';
   } else {
-    btn.textContent = 'â¡ Conectar Inoreader';
+    btn.textContent = '⚡ Conectar Inoreader';
     btn.style.color = '';
     btn.style.borderColor = '';
   }
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   FETCH â Inoreader API (autenticado) â fallback rss2json
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
-
+/* ─────────────────────────────────────────────────
+   FETCH — Inoreader API
+   ───────────────────────────────────────────────── */
 async function fetchFromInoreaderAPI(token) {
   const url = `${INO_API}/stream/contents/user/-/label/${encodeURIComponent(CONFIG.inoreaderFolder)}` +
               `?n=${CONFIG.articlesPerLoad}&output=json`;
   const res = await fetch(url, {
     headers: {
       'Authorization': `Bearer ${token}`,
-      'AppId':  CONFIG.appId,
+      'AppId': CONFIG.appId,
       'AppKey': CONFIG.appKey,
     },
     signal: AbortSignal.timeout(20000),
   });
   if (res.status === 401) {
     localStorage.removeItem(INO_TOKEN_KEY);
-    throw new Error('Token expirado â clique em "Conectar Inoreader" novamente.');
+    throw new Error('Token expirado — clique em "Conectar Inoreader" novamente.');
   }
-  if (!res.ok) throw new Error(`Inoreader API: ${res.status}`);
+  if (!res.ok) throw new Error(`Inoreader API erro ${res.status}`);
   const data = await res.json();
   if (!data.items) throw new Error('Resposta vazia da API do Inoreader');
 
   return data.items
     .map(item => {
-      const link  = item.canonical?.[0]?.href || item.alternate?.[0]?.href || '#';
-      const src   = detectSource(link);
+      const link = item.canonical?.[0]?.href || item.alternate?.[0]?.href || '#';
+      const src = detectSource(link);
       const title = (item.title || '').trim().replace(/\s+/g, ' ');
-      const desc  = item.summary?.content || item.content?.content || '';
+      const desc = item.summary?.content || item.content?.content || '';
       return {
         title,
         link,
-        pubDate:     new Date((item.published || 0) * 1000),
-        sourceName:  src.name,
+        pubDate: new Date((item.published || 0) * 1000),
+        sourceName: src.name,
         sourceShort: src.short,
         sourceColor: src.color,
-        sectors:     classifySectors(title + ' ' + desc),
+        sectors: classifySectors(title + ' ' + desc),
       };
     })
     .filter(a => a.title.length > 5);
 }
 
-/* Fallback: 7 feeds via rss2json (sem login) */
-const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
-
-async function fetchOneFeed(source) {
-  const apiUrl = RSS2JSON + encodeURIComponent(source.rssUrl) + '&count=20';
-  const res    = await fetch(apiUrl, { signal: AbortSignal.timeout(15000) });
-  const data   = await res.json();
-  if (data.status !== 'ok' || !Array.isArray(data.items)) return [];
-  return data.items
-    .filter(item => item.title && item.title.trim().length > 5)
-    .map(item => ({
-      title:       (item.title || '').trim().replace(/\s+/g, ' '),
-      link:        item.link || item.guid || '#',
-      pubDate:     new Date(item.pubDate || item.published || Date.now()),
-      sourceName:  source.name,
-      sourceShort: source.short,
-      sourceColor: source.color,
-      sectors:     classifySectors((item.title || '') + ' ' + (item.description || '')),
-    }));
-}
-
-async function fetchAllFeeds() {
-  const results = await Promise.allSettled(SOURCE_MAP.map(s => fetchOneFeed(s)));
-  return results
-    .filter(r => r.status === 'fulfilled')
-    .flatMap(r => r.value);
-}
-
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
+/* ─────────────────────────────────────────────────
    CARREGAMENTO PRINCIPAL
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
+   ───────────────────────────────────────────────── */
+function showConnectBanner() {
+  const container = document.getElementById('main-content');
+  container.innerHTML = `
+    <div class="connect-banner">
+      <div class="big-icon">🔌</div>
+      <h2>Conecte sua conta do Inoreader</h2>
+      <p>O dashboard busca notícias diretamente da sua pasta <strong>${CONFIG.inoreaderFolder}</strong> no Inoreader.<br>
+         Clique abaixo para autorizar — basta uma vez.</p>
+      <button class="btn-connect" onclick="handleInoClick()">⚡ Conectar Inoreader</button>
+      <div class="note">App ID: ${CONFIG.appId} · Sua sessão fica salva no navegador</div>
+    </div>`;
+  document.getElementById('last-update-subtitle').textContent = 'Aguardando conexão com Inoreader';
+}
+
+function showError(message, detail) {
+  const container = document.getElementById('main-content');
+  container.innerHTML = `
+    <div class="error-box">
+      <div class="icon">⚠️</div>
+      <h3>${escHtml(message)}</h3>
+      ${detail ? `<div class="msg"><code>${escHtml(detail)}</code></div>` : ''}
+      <button class="btn btn-accent" onclick="loadAllNews()">Tentar novamente</button>
+      <button class="btn btn-outline" style="background:var(--muted);color:#fff;margin-left:8px;" onclick="handleInoClick()">Reconectar Inoreader</button>
+    </div>`;
+}
+
 async function loadAllNews() {
+  const token = getToken();
+  if (!token) {
+    showConnectBanner();
+    return;
+  }
+
   const btn = document.getElementById('refresh-btn');
   btn.disabled = true;
-  btn.textContent = 'â» Buscandoâ¦';
-  document.getElementById('last-update-subtitle').textContent = 'Buscando notÃ­ciasâ¦';
+  btn.textContent = '↻ Buscando…';
+  document.getElementById('last-update-subtitle').textContent = 'Buscando notícias…';
 
-  // Carrega histÃ³rico do localStorage imediatamente
+  // Mostra histórico do localStorage enquanto busca o fresco
   const history = loadHistory();
   if (history.length > 0) {
     allArticles = history;
-    renderNews();  // mostra histÃ³rico enquanto busca o fresco
+    renderNews();
   } else {
     document.getElementById('main-content').innerHTML =
-      `<div class="status-box"><div class="spinner"></div><div>Buscando notÃ­cias das 7 fontesâ¦</div></div>`;
+      `<div class="status-box"><div class="spinner"></div><div>Buscando notícias do Inoreader…</div></div>`;
   }
 
   try {
-    const token = getToken();
-    const fresh = token
-      ? await fetchFromInoreaderAPI(token)
-      : await fetchAllFeeds();
+    const fresh = await fetchFromInoreaderAPI(token);
     allArticles = mergeArticles(history, fresh);
     saveHistory(allArticles);
   } catch (e) {
     console.error('Erro ao carregar:', e);
     if (allArticles.length === 0) {
-      document.getElementById('main-content').innerHTML = `
-        <div class="status-box">
-          <div class="icon">â ï¸</div>
-          <div>NÃ£o foi possÃ­vel carregar as notÃ­cias.<br>
-          <small style="color:#9ca3af">${e.message}</small><br><br>
-          <button class="btn btn-accent" onclick="loadAllNews()" style="margin-top:8px">Tentar novamente</button></div>
-        </div>`;
+      showError('Não foi possível carregar as notícias.', e.message);
       btn.disabled = false;
-      btn.textContent = 'â» Atualizar';
+      btn.textContent = '↻ Atualizar';
       return;
     }
   }
@@ -821,26 +816,25 @@ async function loadAllNews() {
   lastLoadTime = new Date();
   renderNews();
   btn.disabled = false;
-  btn.textContent = 'â» Atualizar';
+  btn.textContent = '↻ Atualizar';
 
   const fmtTime = lastLoadTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const total   = getFilteredArticles().length;
+  const total = getFilteredArticles().length;
   document.getElementById('last-update-subtitle').textContent =
-    `${total} notÃ­cias â¢ atualizado Ã s ${fmtTime}`;
+    `${total} notícias no período · atualizado às ${fmtTime}`;
   document.getElementById('footer-status').textContent =
-    `HistÃ³rico: ${allArticles.length} notÃ­cias armazenadas â¢ prÃ³xima atualizaÃ§Ã£o em ${CONFIG.autoRefreshMinutes} min`;
+    `Histórico: ${allArticles.length} notícias · próxima atualização em ${CONFIG.autoRefreshMinutes} min`;
 
-  // Atualiza nota de histÃ³rico
   if (allArticles.length > 0) {
     const oldest = new Date(Math.min(...allArticles.map(a => a.pubDate.getTime())));
     document.getElementById('history-note').textContent =
-      `HistÃ³rico desde ${oldest.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
+      `Histórico desde ${oldest.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}`;
   }
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
+/* ─────────────────────────────────────────────────
    RENDER
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
+   ───────────────────────────────────────────────── */
 function renderNews() {
   const container = document.getElementById('main-content');
   const searchVal = document.getElementById('search-input').value.toLowerCase();
@@ -849,8 +843,8 @@ function renderNews() {
   if (allArticles.length === 0) {
     container.innerHTML = `
       <div class="status-box">
-        <div class="icon">ð¶</div>
-        <div>Nenhuma notÃ­cia encontrada. Verifique sua conexÃ£o e tente novamente.</div>
+        <div class="icon">📭</div>
+        <div>Nenhuma notícia encontrada. Verifique sua pasta TransCap no Inoreader.</div>
       </div>`;
     return;
   }
@@ -858,8 +852,8 @@ function renderNews() {
   if (periodArticles.length === 0) {
     container.innerHTML = `
       <div class="status-box">
-        <div class="icon">ð</div>
-        <div>Sem notÃ­cias nesse perÃ­odo. Tente selecionar "Tudo" ou aguarde mais atualizaÃ§Ãµes.</div>
+        <div class="icon">🕒</div>
+        <div>Sem notícias nesse período. Tente "7 dias" ou "Tudo".</div>
       </div>`;
     return;
   }
@@ -873,7 +867,7 @@ function renderNews() {
     const others = periodArticles.filter(a => a.sectors.length === 0);
     if (others.length > 0) {
       html += renderSectorSection(
-        { id: 'other', name: 'Outros / Macro', emoji: 'ð', color: '#95a5a6' },
+        { id: 'other', name: 'Outros / Macro', emoji: '📊', color: '#95a5a6' },
         searchVal, false, others, periodArticles
       );
     }
@@ -882,7 +876,7 @@ function renderNews() {
     html += renderSectorSection(sector, searchVal, true, null, periodArticles);
   }
 
-  container.innerHTML = html || `<div class="status-box"><div class="icon">ð</div><div>Sem resultados para "${searchVal}".</div></div>`;
+  container.innerHTML = html || `<div class="status-box"><div class="icon">🔍</div><div>Sem resultados para "${escHtml(searchVal)}".</div></div>`;
 }
 
 function renderSectorSection(sector, searchVal, forceShow, overrideArticles, periodArticles) {
@@ -898,7 +892,7 @@ function renderSectorSection(sector, searchVal, forceShow, overrideArticles, per
   if (filtered.length === 0 && !forceShow) return '';
 
   let itemsHtml = filtered.length === 0
-    ? `<div class="status-box" style="padding:24px;font-size:13px;">Sem notÃ­cias nessa busca.</div>`
+    ? `<div class="status-box" style="padding:24px;font-size:13px;">Sem notícias nesse setor para o período selecionado.</div>`
     : filtered.map(a => renderArticle(a)).join('');
 
   return `
@@ -916,7 +910,7 @@ function renderArticle(a) {
   const timeAgo = getTimeAgo(a.pubDate);
   return `
     <a class="news-item" href="${escHtml(a.link)}" target="_blank" rel="noopener">
-      <span class="news-bullet">â¢</span>
+      <span class="news-bullet">•</span>
       <div class="news-body">
         <div class="news-title">${escHtml(a.title)}</div>
         <div class="news-meta">
@@ -927,9 +921,9 @@ function renderArticle(a) {
     </a>`;
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
+/* ─────────────────────────────────────────────────
    HELPERS UI
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
+   ───────────────────────────────────────────────── */
 function switchTab(sector) {
   currentSector = sector;
   document.querySelectorAll('.tab-btn').forEach(t =>
@@ -942,28 +936,48 @@ function switchTimeRange(days) {
   document.querySelectorAll('.timefilter-btn').forEach(b =>
     b.classList.toggle('active', Number(b.dataset.range) === days));
   renderNews();
+  // Atualiza contador no header
+  if (lastLoadTime) {
+    const fmtTime = lastLoadTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const total = getFilteredArticles().length;
+    document.getElementById('last-update-subtitle').textContent =
+      `${total} notícias no período · atualizado às ${fmtTime}`;
+  }
 }
 
 function getFilteredArticles() {
+  const now = Date.now();
   if (currentRange === 0) return allArticles;
-  const cutoff = Date.now() - currentRange * 86400000;
+  if (currentRange === 1) {
+    // Últimas 24h
+    return allArticles.filter(a => a.pubDate.getTime() > now - 86400000);
+  }
+  if (currentRange === 2) {
+    // Ontem: entre 48h e 24h atrás
+    const from = now - 2 * 86400000;
+    const to = now - 86400000;
+    return allArticles.filter(a => {
+      const t = a.pubDate.getTime();
+      return t > from && t <= to;
+    });
+  }
+  // 7 ou 30 dias
+  const cutoff = now - currentRange * 86400000;
   return allArticles.filter(a => a.pubDate.getTime() > cutoff);
 }
 
-function filterSearch() {
-  renderNews();
-}
+function filterSearch() { renderNews(); }
 
 function getTimeAgo(date) {
   const diff = Date.now() - date.getTime();
   if (isNaN(diff) || diff < 0) return '';
   const min = Math.floor(diff / 60000);
-  if (min < 1)  return 'agora';
-  if (min < 60) return `hÃ¡ ${min} min`;
+  if (min < 1) return 'agora';
+  if (min < 60) return `há ${min} min`;
   const h = Math.floor(min / 60);
-  if (h < 24)   return `hÃ¡ ${h}h`;
+  if (h < 24) return `há ${h}h`;
   const d = Math.floor(h / 24);
-  return `hÃ¡ ${d}d`;
+  return `há ${d}d`;
 }
 
 function escHtml(str) {
@@ -972,9 +986,9 @@ function escHtml(str) {
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
+/* ─────────────────────────────────────────────────
    DIGEST EMAIL
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
+   ───────────────────────────────────────────────── */
 function openDigest() {
   const modal = document.getElementById('modal-overlay');
   modal.classList.remove('hidden');
@@ -989,12 +1003,13 @@ function closeDigestOnOverlay(e) {
 
 function buildDigestText() {
   const today = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  let txt = `ItaÃº BBA | Transportation & Capital Goods\n`;
-  txt += `ð° NotÃ­cias â ${today}\n`;
-  txt += `${'â'.repeat(50)}\n\n`;
+  const periodArticles = getFilteredArticles();
+  let txt = `Itaú BBA | Transportation & Capital Goods\n`;
+  txt += `📰 Notícias — ${today}\n`;
+  txt += `${'─'.repeat(50)}\n\n`;
 
   for (const sector of SECTORS) {
-    const items = allArticles.filter(a => a.sectors.includes(sector.id)).slice(0, 8);
+    const items = periodArticles.filter(a => a.sectors.includes(sector.id)).slice(0, 10);
     if (items.length === 0) continue;
     txt += `${sector.emoji} ${sector.name.toUpperCase()}\n\n`;
     for (const a of items) {
@@ -1010,23 +1025,24 @@ function copyDigest() {
   const text = document.getElementById('digest-content').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const btn = event.target;
-    btn.textContent = 'â Copiado!';
-    setTimeout(() => btn.textContent = 'ð Copiar', 2000);
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar', 2000);
   });
 }
 
 function sendEmailDigest() {
-  const subject = encodeURIComponent(`TransCap News â ${new Date().toLocaleDateString('pt-BR')}`);
-  const body    = encodeURIComponent(document.getElementById('digest-content').textContent);
+  const subject = encodeURIComponent(`TransCap News — ${new Date().toLocaleDateString('pt-BR')}`);
+  const body = encodeURIComponent(document.getElementById('digest-content').textContent);
   window.open(`mailto:${CONFIG.digestEmail}?subject=${subject}&body=${body}`, '_blank');
 }
 
-/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
-   AUTO-REFRESH
-   âââââââââââââââââââââââââââââââââââââââââââââââââââ */
-setInterval(loadAllNews, CONFIG.autoRefreshMinutes * 60 * 1000);
+/* ─────────────────────────────────────────────────
+   AUTO-REFRESH + INIT
+   ───────────────────────────────────────────────── */
+setInterval(() => {
+  if (getToken()) loadAllNews();
+}, CONFIG.autoRefreshMinutes * 60 * 1000);
 
-/* ââ INICIALIZAR ââ */
 updateInoButton();
 loadAllNews();
 </script>
