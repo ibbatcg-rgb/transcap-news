@@ -1,0 +1,200 @@
+name: Fetch Inoreader News
+
+on:
+  schedule:
+    # A cada 30 minutos
+    - cron: '*/30 * * * *'
+  workflow_dispatch:  # permite rodar manualmente em Actions > Run workflow
+
+permissions:
+  contents: write  # necessário para commitar news.json
+
+concurrency:
+  group: fetch-news
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Fetch articles with smart pagination
+        env:
+          INO_APP_ID: ${{ secrets.INOREADER_APP_ID }}
+          INO_APP_KEY: ${{ secrets.INOREADER_APP_KEY }}
+          INO_REFRESH_TOKEN: ${{ secrets.INOREADER_REFRESH_TOKEN }}
+          INO_FOLDER: ${{ secrets.INOREADER_FOLDER }}
+        run: |
+          python3 <<'PY'
+          import os, json, time, urllib.parse, urllib.request, urllib.error, datetime, sys
+
+          APP_ID = os.environ['INO_APP_ID']
+          APP_KEY = os.environ['INO_APP_KEY']
+          REFRESH_TOKEN = os.environ['INO_REFRESH_TOKEN']
+          FOLDER = os.environ.get('INO_FOLDER', 'TransCap')
+          MAX_AGE_DAYS = 5
+          MAX_PAGES = 8         # paginação máxima (8 × 100 = 800 itens)
+          PAGE_SIZE = 100
+
+          cutoff = time.time() - MAX_AGE_DAYS * 86400
+          print(f"Cutoff: {datetime.datetime.utcfromtimestamp(cutoff).isoformat()}Z (5 days ago)")
+
+          # ───────────────────────────────────────────────
+          # 1) Refresh access_token
+          # ───────────────────────────────────────────────
+          print("::group::Refreshing access token")
+          token_body = urllib.parse.urlencode({
+              'client_id': APP_ID,
+              'client_secret': APP_KEY,
+              'refresh_token': REFRESH_TOKEN,
+              'grant_type': 'refresh_token',
+          }).encode()
+          req = urllib.request.Request(
+              'https://www.inoreader.com/oauth2/token',
+              data=token_body,
+              headers={'Content-Type': 'application/x-www-form-urlencoded'},
+          )
+          with urllib.request.urlopen(req, timeout=20) as r:
+              token_data = json.loads(r.read())
+          ACCESS_TOKEN = token_data['access_token']
+          print("Token refreshed OK")
+          print("::endgroup::")
+
+          # ───────────────────────────────────────────────
+          # 2) Fetch articles with pagination
+          # ───────────────────────────────────────────────
+          folder_enc = urllib.parse.quote(FOLDER)
+          base_url = f"https://www.inoreader.com/reader/api/0/stream/contents/user/-/label/{folder_enc}"
+
+          all_items = []
+          seen_ids = set()
+          continuation = None
+          pages_fetched = 0
+          dropped_old = 0
+          dropped_dup = 0
+
+          for page in range(MAX_PAGES):
+              params = {'n': str(PAGE_SIZE), 'output': 'json'}
+              if continuation:
+                  params['c'] = continuation
+              url = base_url + '?' + urllib.parse.urlencode(params)
+
+              print(f"::group::Page {page+1}: fetching {PAGE_SIZE} items"
+                    + (f" (continuation: {continuation[:20]}…)" if continuation else ""))
+              req = urllib.request.Request(url, headers={
+                  'Authorization': f'Bearer {ACCESS_TOKEN}',
+                  'AppId': APP_ID,
+                  'AppKey': APP_KEY,
+              })
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      page_data = json.loads(r.read())
+              except urllib.error.HTTPError as e:
+                  print(f"API error: {e.code} {e.reason}")
+                  print(e.read()[:500].decode('utf-8', errors='replace'))
+                  break
+
+              items = page_data.get('items', [])
+              continuation = page_data.get('continuation')
+              pages_fetched += 1
+
+              # Min/max published time in this page
+              pub_times = [it.get('published') or 0 for it in items if it.get('published')]
+              if pub_times:
+                  newest = max(pub_times)
+                  oldest = min(pub_times)
+                  print(f"  Got {len(items)} items. Newest published: "
+                        f"{datetime.datetime.utcfromtimestamp(newest).isoformat()}Z, "
+                        f"oldest: {datetime.datetime.utcfromtimestamp(oldest).isoformat()}Z")
+              else:
+                  oldest = 0
+                  print(f"  Got {len(items)} items (no published dates).")
+
+              page_kept = 0
+              for it in items:
+                  item_id = it.get('id')
+                  if not item_id or item_id in seen_ids:
+                      dropped_dup += 1
+                      continue
+                  pub = it.get('published') or 0
+                  if pub < cutoff:
+                      dropped_old += 1
+                      continue
+                  seen_ids.add(item_id)
+                  all_items.append(it)
+                  page_kept += 1
+              print(f"  Kept {page_kept} fresh items from this page (total so far: {len(all_items)})")
+              print("::endgroup::")
+
+              # Stop conditions:
+              # - No more continuation token
+              # - This page's oldest item is already older than cutoff
+              #   (next page will be even older, no point continuing)
+              if not continuation:
+                  print("No continuation token → end of stream")
+                  break
+              if pub_times and oldest < cutoff:
+                  print(f"Page's oldest item is older than cutoff → stopping pagination")
+                  break
+
+          # ───────────────────────────────────────────────
+          # 3) Slim items + sort + write news.json
+          # ───────────────────────────────────────────────
+          print(f"::group::Building news.json")
+          print(f"Total kept: {len(all_items)} | dropped (old): {dropped_old} | dropped (dup): {dropped_dup}")
+
+          slim = []
+          for it in all_items:
+              slim.append({
+                  'id': it.get('id'),
+                  'title': (it.get('title') or '').strip(),
+                  'published': it.get('published') or 0,
+                  'updated': it.get('updated'),
+                  'canonical': it.get('canonical'),
+                  'alternate': it.get('alternate'),
+                  'origin': {
+                      'streamId': (it.get('origin') or {}).get('streamId'),
+                      'title': (it.get('origin') or {}).get('title'),
+                  },
+                  'summary': {
+                      'content': ((it.get('summary') or {}).get('content') or '')[:400]
+                  } if it.get('summary') else None,
+              })
+
+          # Mais recentes primeiro
+          slim.sort(key=lambda x: x.get('published') or 0, reverse=True)
+
+          out = {
+              '_fetched_at': datetime.datetime.utcnow().isoformat() + 'Z',
+              '_folder': FOLDER,
+              '_count': len(slim),
+              '_max_age_days': MAX_AGE_DAYS,
+              '_pages_fetched': pages_fetched,
+              '_dropped_old': dropped_old,
+              '_dropped_dup': dropped_dup,
+              'items': slim,
+          }
+          with open('news.json', 'w', encoding='utf-8') as f:
+              json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
+          print(f"Wrote {len(slim)} items to news.json")
+          print("::endgroup::")
+          PY
+
+          ls -la news.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add news.json
+          if git diff --cached --quiet; then
+            echo "No changes — skipping commit"
+          else
+            git commit -m "chore: update news.json ($(date -u +%Y-%m-%dT%H:%MZ))"
+            git push
+          fi
