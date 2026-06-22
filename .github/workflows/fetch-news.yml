@@ -387,12 +387,28 @@ jobs:
                   # Já foi resolvido em run anterior — guarda
                   resolved_cache[it.get('id')] = link
 
-          # Coleta IDs que precisam resolver (Google News e ainda não no cache)
+          # Coleta IDs que precisam resolver (Google News e ainda não no cache).
+          # Inclui tanto items novos (slim) quanto items antigos (existing_items)
+          # que ainda estão com URL Google News — backfill incremental.
           to_resolve = []
+          seen_ids = set()
+          # Limite para não estourar tempo do workflow (Google retorna ~1s por URL)
+          MAX_BACKFILL_PER_RUN = 200
           for it in slim:
               gnews = get_gnews_link(it)
-              if gnews and it.get('id') not in resolved_cache:
+              if gnews and it.get('id') not in resolved_cache and it.get('id') not in seen_ids:
                   to_resolve.append((it.get('id'), gnews))
+                  seen_ids.add(it.get('id'))
+          backfill_count = 0
+          for it in existing_items:
+              if backfill_count >= MAX_BACKFILL_PER_RUN:
+                  break
+              gnews = get_gnews_link(it)
+              if gnews and it.get('id') not in resolved_cache and it.get('id') not in seen_ids:
+                  to_resolve.append((it.get('id'), gnews))
+                  seen_ids.add(it.get('id'))
+                  backfill_count += 1
+          print(f"Backfill: {backfill_count} URLs antigas do histórico (limit {MAX_BACKFILL_PER_RUN})")
 
           print(f"Cache hits: {sum(1 for it in slim if get_gnews_link(it) and it.get('id') in resolved_cache)}")
           print(f"To resolve: {len(to_resolve)}")
@@ -409,18 +425,25 @@ jobs:
                           print(f"  exception for {item_id}: {e}")
               print(f"Resolved {len(to_resolve)} URLs in {time.time()-t0:.1f}s")
 
-          # Aplica as URLs resolvidas nos slim items
-          replaced = 0
-          for it in slim:
-              gnews = get_gnews_link(it)
-              if gnews and resolved_cache.get(it.get('id')):
-                  new_link = resolved_cache[it.get('id')]
+          # Aplica as URLs resolvidas — tanto em slim quanto em existing_items
+          # (assim items antigos do histórico também ganham URLs publishers)
+          def apply_resolution(item):
+              gnews = get_gnews_link(item)
+              if gnews and resolved_cache.get(item.get('id')):
+                  new_link = resolved_cache[item.get('id')]
                   if new_link != gnews:
-                      it['canonical'] = [{'href': new_link}]
-                      it['_original_gnews_url'] = gnews  # guarda original pra debug
-                      replaced += 1
-          print(f"Replaced {replaced} Google News URLs with publisher URLs")
+                      item['canonical'] = [{'href': new_link}]
+                      item['_original_gnews_url'] = gnews
+                      return True
+              return False
+
+          replaced_new = sum(1 for it in slim if apply_resolution(it))
+          replaced_old = sum(1 for it in existing_items if apply_resolution(it))
+          replaced = replaced_new + replaced_old
+          print(f"Replaced {replaced_new} (new) + {replaced_old} (history) = {replaced} Google News URLs")
           debug_info['gnews_resolved'] = replaced
+          debug_info['gnews_resolved_new'] = replaced_new
+          debug_info['gnews_resolved_history'] = replaced_old
           debug_info['gnews_to_resolve'] = len(to_resolve)
 
           # Estratégia de merge SEMPRE — preserva histórico:
